@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { random } from './utils/colors.js';
 
 import "./main.css";
 
@@ -8,11 +9,11 @@ export default function App(props) {
 
   var [textIsVisible, setTextIsVisible] = useState(true);
   var [vizIsVisible, setVizIsVisible] = useState(true);
-  var [texts, setTexts] = useState([{}]);
+  var [texts, setTexts] = useState([{ index: 0, color: random(0, 100) }]);
 
   function increase() {
     var result = texts.slice(0);
-    result.push({});
+    result.push({ index: result.length, color: random(0, 100) });
     setTexts(result);
     focus();
   }
@@ -45,12 +46,15 @@ export default function App(props) {
   //
 
   function render(text, i) {
-    var styles = {
+    var ds = {
       width: `${(100 / texts.length).toFixed(3)}vw`
     };
+    var ts = {
+      color: text.color
+    };
     return (
-      <div key={ i } className="column" style={ styles }>
-        <textarea />
+      <div key={ i } className="column" style={ ds }>
+        <textarea style={ ts } />
       </div>
     );
   }
