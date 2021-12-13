@@ -4,7 +4,9 @@
   "description": "A collection of components to visually compare texts",
   "main": "index.js",
   "scripts": {
-    "dev": "esbuild --bundle src/index.js --sourcemap --loader:.js=jsx --outfile=public/main.js --servedir=public --serve=8080",
+    "less": "less-watch-compiler src src main.less --source-map",
+    "serve": "esbuild --bundle src/index.js --sourcemap --loader:.js=jsx --outfile=public/main.js --servedir=public --serve=8080",
+    "dev": "concurrently --kill-others \"npm run less\" \"npm run serve\"",
     "build": "esbuild --bundle src/index.js --outfile=public/main.js"
   },
   "repository": {
@@ -25,7 +27,10 @@
   },
   "homepage": "https://github.com/jonobr1/diffs#readme",
   "devDependencies": {
-    "esbuild": "^0.14.3"
+    "concurrently": "^6.4.0",
+    "esbuild": "^0.14.3",
+    "less": "^4.1.2",
+    "less-watch-compiler": "^1.16.3"
   },
   "dependencies": {
     "matter-js": "^0.17.1",
