@@ -3,13 +3,25 @@
   padding: 0;
 }
 div#react div.app div.content {
-  position: relative;
+  position: absolute;
   display: flex;
   justify-content: flex-start;
   flex-wrap: nowrap;
+  top: 25px;
+  left: 0;
+  width: 100%;
+  height: calc(100% - 25px);
 }
 div#react div.app div.content > div.column {
   display: inline-block;
   flex-grow: 1;
+  overflow: hidden;
+}
+div#react div.app div.content > div.column textarea {
+  display: block;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  resize: none;
 }
 /*# sourceMappingURL=main.css.map */

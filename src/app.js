@@ -4,7 +4,7 @@ import "./main.css";
 
 export default function App(props) {
 
-  var [texts, setTexts] = useState([]);
+  var [texts, setTexts] = useState([{}]);
 
   useEffect(setup, []);
 
@@ -12,7 +12,7 @@ export default function App(props) {
 
   }
 
-  function add() {
+  function increase() {
     setTexts(function(text) {
       var result = text.slice(0);
       result.push({});
@@ -20,11 +20,22 @@ export default function App(props) {
     });
   }
 
+  function reduce() {
+    setTexts(function(text) {
+      var result = text.slice(0);
+      result.pop();
+      return result;
+    });
+  }
+
   //
 
   function render(text, i) {
+    var styles = {
+      width: `${(100 / texts.length).toFixed(3)}vw`
+    };
     return (
-      <div key={ i } className="column">
+      <div key={ i } className="column" style={ styles }>
         <textarea />
       </div>
     );
@@ -37,9 +48,12 @@ export default function App(props) {
         { texts.map(render) }
       </div>
 
-      <div className="actions">
-        <button onClick={ add }>
-          +
+      <div className="menu">
+        <button onClick={ reduce }>
+          Remove Text Field
+        </button>
+        <button onClick={ increase }>
+          Add Text Field
         </button>
       </div>
 
