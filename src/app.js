@@ -4,6 +4,8 @@ import "./main.css";
 
 export default function App(props) {
 
+  var domElement = useRef();
+
   var [textIsVisible, setTextIsVisible] = useState(true);
   var [vizIsVisible, setVizIsVisible] = useState(true);
   var [texts, setTexts] = useState([{}]);
@@ -12,12 +14,14 @@ export default function App(props) {
     var result = texts.slice(0);
     result.push({});
     setTexts(result);
+    focus();
   }
 
   function reduce() {
     var result = texts.slice(0);
     result.pop();
     setTexts(result);
+    focus();
   }
 
   function toggleText() {
@@ -26,6 +30,16 @@ export default function App(props) {
 
   function toggleVisuals() {
     setVizIsVisible(!vizIsVisible);
+  }
+
+  function focus() {
+    requestAnimationFrame(function() {
+      var selector = 'div.text div.column:last-child textarea';
+      var textarea = domElement.current.querySelector(selector);
+      if (textarea) {
+        textarea.focus();
+      }
+    });
   }
 
   //
@@ -42,7 +56,7 @@ export default function App(props) {
   }
 
   return (
-    <div className="app">
+    <div ref={ domElement } className="app">
 
       <div className={ ['view', 'visualization', vizIsVisible ? 'enabled' : ''].join(' ') }>
 
