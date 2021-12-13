@@ -8,19 +8,35 @@
 
 div#react {
 
+  font-size: @font-size;
+  line-height: @line-height;
+
   div.app {
 
-    div.content {
+    div.view {
+
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.35s ease-in-out;
+
+      &.enabled {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+    }
+
+    div.text {
 
       position: absolute;
       display: flex;
       justify-content: flex-start;
       flex-wrap: nowrap;
 
-      top: @line-height;
+      top: @line-height * 2;
       left: 0;
       width: 100%;
-      height: calc(100% - @line-height);
+      height: calc(100% - (@line-height * 2));
 
       & > div.column {
 
@@ -38,6 +54,17 @@ div#react {
 
       }
 
+    }
+
+    div.menu {
+      padding: 0 @font-size * 0.25;
+      line-height: @line-height * 2;
+      & > * {
+        margin-right: @font-size * 0.5;
+      }
+      input + label {
+        margin-left: @font-size * 0.25;
+      }
     }
 
   }
