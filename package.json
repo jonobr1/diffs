@@ -1,0 +1,36 @@
+{
+  "name": "diffs",
+  "version": "1.0.0",
+  "description": "A collection of components to visually compare texts",
+  "main": "index.js",
+  "scripts": {
+    "dev": "esbuild --bundle src/index.js --sourcemap --loader:.js=jsx --outfile=public/main.js --servedir=public --serve=8080",
+    "build": "esbuild --bundle src/index.js --outfile=public/main.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jonobr1/diffs.git"
+  },
+  "keywords": [
+    "diff",
+    "comparison",
+    "text",
+    "visualization",
+    "two.js"
+  ],
+  "author": "@jonobr1",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jonobr1/diffs/issues"
+  },
+  "homepage": "https://github.com/jonobr1/diffs#readme",
+  "devDependencies": {
+    "esbuild": "^0.14.3"
+  },
+  "dependencies": {
+    "matter-js": "^0.17.1",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "two.js": "^0.7.12"
+  }
+}
