@@ -38,7 +38,7 @@ div#react div.app div.text > div.column textarea {
   resize: none;
 }
 div#react div.app div.menu {
-  padding: 0 4.25px;
+  padding: 0 8.5px;
   line-height: 50px;
 }
 div#react div.app div.menu > * {
