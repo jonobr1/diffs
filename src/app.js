@@ -9,11 +9,11 @@ export default function App(props) {
 
   var [textIsVisible, setTextIsVisible] = useState(true);
   var [vizIsVisible, setVizIsVisible] = useState(true);
-  var [texts, setTexts] = useState([{ index: 0, color: random(0, 100) }]);
+  var [texts, setTexts] = useState([{ index: 0, color: random(0, 0.5) }]);
 
   function increase() {
     var result = texts.slice(0);
-    result.push({ index: result.length, color: random(0, 100) });
+    result.push({ index: result.length, color: random(0, 0.5) });
     setTexts(result);
     focus();
   }

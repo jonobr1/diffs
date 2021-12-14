@@ -1,15 +1,17 @@
+import utils from 'less/lib/less/functions/color.js';
+
 function random(min, max) {
   if (typeof min !== 'number') {
     min = 0;
   }
   if (typeof max !== 'number') {
-    max = 255;
+    max = 1;
   }
-  var range = max - min;
-  var red = Math.floor(Math.random() * range + min);
-  var green = Math.floor(Math.random() * range + min);
-  var blue = Math.floor(Math.random() * range + min);
-  return `rgb(${red}, ${green}, ${blue})`;
+  var h = Math.floor(Math.random() * 360);
+  var s = 1;
+  var l = Math.random() * (max - min) + min;
+  var hsl = utils.hsl(h, s, l);
+  return hsl.toCSS();
 }
 
 export { random };
