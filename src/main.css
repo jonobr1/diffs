@@ -15,6 +15,12 @@ div#react div.app div.view.enabled {
   opacity: 1;
   pointer-events: auto;
 }
+div#react div.app div.visualization {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -1;
+}
 div#react div.app div.text {
   position: absolute;
   display: flex;
@@ -36,6 +42,7 @@ div#react div.app div.text > div.column textarea {
   height: 100%;
   box-sizing: border-box;
   resize: none;
+  background: transparent;
 }
 div#react div.app div.menu {
   padding: 0 8.5px;

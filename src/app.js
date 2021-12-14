@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import Visualization from './visualization.js';
 import { random } from './utils/colors.js';
 
 import "./main.css";
@@ -9,11 +10,11 @@ export default function App(props) {
 
   var [textIsVisible, setTextIsVisible] = useState(true);
   var [vizIsVisible, setVizIsVisible] = useState(true);
-  var [texts, setTexts] = useState([{ index: 0, color: random(0, 0.5) }]);
+  var [texts, setTexts] = useState([{ id: 0, index: 0, color: random(0, 0.5) }]);
 
   function increase() {
     var result = texts.slice(0);
-    result.push({ index: result.length, color: random(0, 0.5) });
+    result.push({ id: result.length, index: 0, color: random(0, 0.5) });
     setTexts(result);
     focus();
   }
@@ -63,7 +64,7 @@ export default function App(props) {
     <div ref={ domElement } className="app">
 
       <div className={ ['view', 'visualization', vizIsVisible ? 'enabled' : ''].join(' ') }>
-
+        <Visualization objects={ texts } />
       </div>
 
       <div className={ ['view', 'text', textIsVisible ? 'enabled' : ''].join(' ') }>
