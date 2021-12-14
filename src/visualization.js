@@ -110,7 +110,14 @@ export default function Visualization(props) {
       }
 
       obj.index = i;
+
       hide(toHide);
+
+      if (obj.index >= text.length) {
+        if (groups.length > text.length) {
+          remove(groups.splice(text.length, groups.length - text.length));
+        }
+      }
 
     }
 
