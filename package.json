@@ -7,7 +7,7 @@
     "less": "less-watch-compiler src src main.less --source-map",
     "serve": "esbuild --bundle src/index.js --sourcemap --loader:.js=jsx --outfile=public/main.js --servedir=public --serve=8080",
     "dev": "concurrently --kill-others \"npm run less\" \"npm run serve\"",
-    "build": "esbuild --bundle src/index.js --outfile=public/main.js"
+    "build": "esbuild --bundle src/index.js --loader:.js=jsx --outfile=public/main.js --target=es6 --minify"
   },
   "repository": {
     "type": "git",
