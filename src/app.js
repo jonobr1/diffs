@@ -44,6 +44,17 @@ export default function App(props) {
     });
   }
 
+  function save() {
+    var canvas = document.querySelector('canvas');
+    var a = document.createElement('a');
+    a.href = canvas.toDataURL('image/png');
+    a.download = 'diffs.png';
+    a.style.display = 'none';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  }
+
   //
 
   function render(text, i) {
@@ -86,6 +97,9 @@ export default function App(props) {
           <input id="viz-visibility" type="checkbox" defaultChecked={ vizIsVisible } onChange={ toggleVisuals } />
           <label htmlFor="viz-visibility">Visuals Visible</label>
         </span>
+        <button onClick={ save }>
+          Save
+        </button>
       </div>
 
     </div>
