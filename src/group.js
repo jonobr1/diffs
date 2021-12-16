@@ -1,4 +1,6 @@
 import Two from 'two.js';
+import Matter from 'matter-js';
+import Easing from './utils/easing.js';
 
 var styles = {
   family: 'Arial',
@@ -13,65 +15,77 @@ export default class Group {
   object = new Two.Group();
   velocity = new Two.Vector();
 
+  engine = null;
   circle = null;
   destination = null;
-  speed = 100;
+  speed = 250;
 
-  constructor(word, color, destination) {
+  constructor(engine, word, color, destination) {
 
+    this.engine = engine;
     this.destination = destination;
-    this.circle = new Two.Circle(0, 0, 0);
+
+    this.body = Matter.Bodies.circle(0, 0, 0.5);
+    this.body.friction = 0.7;
+
+    this.circle = new Two.Circle(0, 0, 0.5);
     this.text = new Two.Text(word, 0, 0, styles);
 
     this.circle.fill = color;
-    this.circle.stroke = color;
-    this.circle.linewidth = styles.size * 0.5;
+    this.circle.noStroke();
 
     this.object.add(this.circle, this.text);
 
     var theta = Math.random() * Math.PI * 2;
     var rad = styles.leading * 10;
-    var ox = rad * Math.cos(theta) + destination.x;
-    var oy = rad * Math.sin(theta) + destination.y;
-    this.object.position.set(ox, oy);
+    var x = rad * Math.cos(theta) + destination.x;
+    var y = rad * Math.sin(theta) + destination.y;
+
+    this.body.position = this.object.position;
+
+    Matter.Body.setPosition(this.body, { x, y });
+    Matter.Composite.add(this.engine.world, this.body);
 
   }
 
   update() {
 
+    var scale;
     var dest = this.destination;
     var source = this.object.position;
+    var height = window.innerHeight;
 
     var theta = Two.Vector.angleBetween(dest, source);
-    var step = this.speed;
+    var delta = Math.min(Math.max(dest.distanceTo(source), 0), height);
+    var step = this.speed * Easing.Exponential.In(delta / height);
     var x = step * Math.cos(theta);
     var y = step * Math.sin(theta);
 
-    this.velocity.x += (x - this.velocity.x) * 0.01;
-    this.velocity.y += (y - this.velocity.y) * 0.01;
+    this.velocity.x += x;
+    this.velocity.y += y;
 
-    this.object.position.add(this.velocity);
-    this.circle.radius = this.text.value.length * 5;
+    this.velocity.x *= 0.9;
+    this.velocity.y *= 0.9;
 
-    return this;
+    Matter.Body.setVelocity(this.body, this.velocity);
 
-  }
+    scale = 1 / (this.circle.radius * 2);
+    Matter.Body.scale(this.body, scale, scale);
 
-  repel(v) {
+    this.circle.radius = (this.text.value.length + 2) * 5;
 
-    var source = this.object.position;
-    var theta = Two.Vector.angleBetween(v, source);
-    var rad = this.circle.radius * 0.01;
-    var x = rad * Math.cos(theta);
-    var y = rad * Math.sin(theta);
+    scale = this.circle.radius * 2;
+    Matter.Body.scale(this.body, scale, scale);
 
-    this.object.position.sub(x, y);
+    this.object.rotation = this.body.angle;
 
     return this;
 
   }
 
   dispose() {
+
+    Matter.Composite.remove(this.engine.world, this.body);
 
     this.circle.unbind();
     this.circle.position.unbind();

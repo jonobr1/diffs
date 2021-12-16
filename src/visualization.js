@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import Two from 'two.js';
+import Matter from 'matter-js';
 import Group from './group.js';
 
 var MAX_ITERATIONS = 100;
@@ -13,6 +14,11 @@ export default function Visualization(props) {
   useEffect(assign, [props.objects]);
 
   function setup() {
+
+    var engine = Matter.Engine.create();
+
+    engine.gravity.x = 0;
+    engine.gravity.y = 0;
 
     var two = new Two({
       type: Two.Types.canvas,
@@ -37,7 +43,9 @@ export default function Visualization(props) {
       two.scene.position.set(two.width / 2, two.height / 2);
     }
 
-    function update() {
+    function update(frameCount, timeDelta) {
+
+      Matter.Engine.update(engine, timeDelta);
 
       var { objects } = refs.current;
 
@@ -97,7 +105,7 @@ export default function Visualization(props) {
         }
 
         if (!group) {
-          group = new Group(word, color, obj.destination);
+          group = new Group(engine, word, color, obj.destination);
           groups.push(group);
           two.add(group.object);
         }
@@ -133,12 +141,6 @@ export default function Visualization(props) {
         }
 
         group.update();
-
-        for (var k = i + 1; k < groups.length; k++) {
-          if (groups[k].object.visible) {
-            group.repel(groups[k].object.position);
-          }
-        }
 
       }
 
