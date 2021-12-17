@@ -1,5 +1,11 @@
 import utils from 'less/lib/less/functions/color.js';
 
+var palette = {
+  white: '#fff',
+  black: '#000',
+  none: 'transparent'
+};
+
 function random(min, max) {
   if (typeof min !== 'number') {
     min = 0;
@@ -14,4 +20,4 @@ function random(min, max) {
   return hsl.toCSS();
 }
 
-export { random };
+export { random, palette };

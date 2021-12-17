@@ -1,15 +1,14 @@
 import Two from 'two.js';
 import Matter from 'matter-js';
 import Easing from './utils/easing.js';
+import { styles as defaultStyles } from './utils/styles.js';
+import { palette } from './utils/colors.js';
 
 var ID = 0;
 
-var styles = {
-  family: 'Arial',
-  size: 17,
-  leading: 25,
-  fill: '#fff',
-  stroke: 'transparent'
+var styles = { ...defaultStyles,
+  fill: palette.white,
+  stroke: palette.none
 };
 
 export default class Group {
@@ -17,11 +16,12 @@ export default class Group {
   id = ID++;
   object = new Two.Group();
   velocity = new Two.Vector();
+  life = 1;
 
   engine = null;
   circle = null;
   destination = null;
-  speed = 250;
+  speed = 100;
 
   constructor(engine, word, color, destination) {
 
@@ -67,12 +67,13 @@ export default class Group {
     this.velocity.x += x;
     this.velocity.y += y;
 
-    this.velocity.x *= 0.9;
-    this.velocity.y *= 0.9;
+    this.velocity.x *= this.life;
+    this.velocity.y *= this.life;
 
     Matter.Body.setVelocity(this.body, this.velocity);
 
     this.object.rotation = this.body.angle;
+    this.life *= 0.95;
 
     return this;
 
