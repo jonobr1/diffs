@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import Two from 'two.js';
 import Matter from 'matter-js';
 import Group from './group.js';
+import Registry from './registry.js';
 
 var MAX_ITERATIONS = 100;
 
@@ -15,6 +16,7 @@ export default function Visualization(props) {
 
   function setup() {
 
+    var registry = new Registry();
     var engine = Matter.Engine.create();
 
     engine.gravity.x = 0;
@@ -55,6 +57,10 @@ export default function Visualization(props) {
         tick(obj);
       }
 
+      if (registry.needsUpdate) {
+        reconcile();
+      }
+
     }
 
     function coordinate(obj, total) {
@@ -62,9 +68,6 @@ export default function Visualization(props) {
       if (!obj.domElement) {
         var selector = `div.text div.column:nth-child(${obj.id + 1}) textarea`;
         obj.domElement = document.querySelector(selector);
-      }
-      if (!obj.destination) {
-        obj.destination = new Two.Vector();
       }
       if (!obj.groups) {
         obj.groups = [];
@@ -74,12 +77,25 @@ export default function Visualization(props) {
       var value = obj.domElement.value;
 
       if (value !== obj.previousText) {
+
         obj.previousText = value;
+
         obj.index = 0;
-        obj.registry = {};
+        obj.tickId = 0;
+        obj.mergeId = 0;
+
+        if (obj.registry) {
+          obj.registry.clear();
+        } else {
+          obj.registry = new Registry();
+        }
+
+        registry.needsUpdate = true;
+        registry.clear();
+
       }
 
-      var { index, domElement, groups, registry, color } = obj;
+      var { index, domElement, groups, color } = obj;
       var text = domElement.value.toLowerCase().split(/\s+/i).filter(isWord);
       var limit = Math.min(index + MAX_ITERATIONS, text.length);
 
@@ -89,29 +105,31 @@ export default function Visualization(props) {
       var y = rad * Math.sin(theta);
       var toHide = [];
 
-      obj.destination.set(x, y);
+      obj.registry.destination.set(x, y);
 
       for (var i = index; i < limit; i++) {
 
         var word = text[i].trim().replace(/\W/ig, '');
         var group = groups[i];
 
-        if (word in registry) {
-          registry[word]++;
+        if (obj.registry.contains(word)) {
+          obj.registry.increment(word);
           if (group) {
             toHide.push(group);
           }
+          // TODO: Update the linked group's scale
           continue;
         }
 
         if (!group) {
-          group = new Group(engine, word, color, obj.destination);
+          group = new Group(engine, word, color, obj.registry.destination);
           groups.push(group);
           two.add(group.object);
         }
 
-        registry[word] = 1;
+        obj.registry.add(word, group);
 
+        group.destination = obj.registry.destination;
         group.word = word;
         group.object.visible = true;
 
@@ -129,12 +147,13 @@ export default function Visualization(props) {
 
     }
 
-    function tick({ groups }) {
+    function tick(obj) {
 
-      for (var j = 0; j < Math.min(MAX_ITERATIONS, groups.length); j++) {
+      var { tickId, groups } = obj;
 
-        var i = j % groups.length;
-        var group = groups[i];
+      for (var j = tickId; j < Math.min(tickId + MAX_ITERATIONS, groups.length); j++) {
+
+        var group = groups[j];
 
         if (!group.object.visible) {
           continue;
@@ -143,6 +162,69 @@ export default function Visualization(props) {
         group.update();
 
       }
+
+      if (j >= groups.length - 1) {
+        obj.tickId = 0;
+      } else {
+        obj.tickId = i;
+      }
+
+    }
+
+    function reconcile() {
+
+      var { objects } = refs.current;
+      var needsUpdate = false;
+
+      for (var i = 0; i < objects.length; i++) {
+        var obj = objects[i];
+        if (merge(obj)) {
+          needsUpdate = true;
+        }
+      }
+
+      registry.needsUpdate = needsUpdate;
+
+    }
+
+    function merge(obj) {
+
+      var needsUpdate = true;
+      var { mergeId } = obj;
+      var size = obj.registry.size;
+      var toHide = [];
+
+      for (var i = mergeId; i < Math.min(mergeId + MAX_ITERATIONS, size); i++) {
+
+        var ref;
+        var group = obj.registry.list[i];
+        var word = group.word;
+        var count = obj.registry.stats[word];
+
+        if (registry.contains(word)) {
+          toHide.push(group);
+          registry.increment(word, count);
+          if (registry.invocations[word] === 2) {
+            // TODO: Set scale here
+            ref = registry.get(word);
+            ref.destination = registry.destination;
+          }
+        } else {
+          registry.add(word, group);
+        }
+
+      }
+
+      if (i >= size - 1) {
+        obj.mergeId = 0;
+        needsUpdate = false;
+      } else {
+        obj.mergeId = i;
+      }
+
+      hide(toHide);
+
+      return needsUpdate;
 
     }
 
