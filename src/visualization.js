@@ -3,6 +3,7 @@ import Two from 'two.js';
 import Matter from 'matter-js';
 import Group from './group.js';
 import Registry from './registry.js';
+import { random } from './utils/colors.js';
 
 var MAX_ITERATIONS = 100;
 
@@ -19,11 +20,13 @@ export default function Visualization(props) {
     var registry = new Registry();
     var engine = Matter.Engine.create();
 
+    registry.color = random(0, 0.5);
+
     engine.gravity.x = 0;
     engine.gravity.y = 0;
 
     var two = new Two({
-      type: Two.Types.canvas,
+      type: Two.Types.svg,
       fullscreen: true,
       autostart: true
     }).appendTo(domElement.current);
@@ -131,6 +134,7 @@ export default function Visualization(props) {
 
         obj.registry.add(word, group);
 
+        group.color = color;
         group.scale = 5 * (word.length + 2);
         group.destination = obj.registry.destination;
         group.word = word;
@@ -211,6 +215,7 @@ export default function Visualization(props) {
             ref = registry.get(word);
             ref.destination = registry.destination;
             ref.scale = 5 * (word.length + 2) * registry.stats[word];
+            ref.color = registry.color;
           }
         } else {
           registry.add(word, group);

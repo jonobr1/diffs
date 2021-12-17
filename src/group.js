@@ -126,4 +126,11 @@ export default class Group {
 
   }
 
+  get color() {
+    return this.circle.fill;
+  }
+  set color(v) {
+    this.circle.fill = v;
+  }
+
 }
