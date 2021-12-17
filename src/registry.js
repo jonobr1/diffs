@@ -8,7 +8,6 @@ export default class {
   map = {};
   stats = {};
   invocations = {};
-  index = 0;
   destination = new Two.Vector();
 
   constructor() {}
@@ -21,7 +20,7 @@ export default class {
     this.map[id] = object;
     if (typeof this.stats[id] === 'undefined') {
       this.list.push(object);
-      this.stats[id] = 0;
+      this.stats[id] = 1;
       this.invocations[id] = 1;
     } else {
       this.stats[id]++;

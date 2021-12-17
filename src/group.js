@@ -69,14 +69,6 @@ export default class Group {
 
     Matter.Body.setVelocity(this.body, this.velocity);
 
-    scale = 1 / (this.circle.radius * 2);
-    Matter.Body.scale(this.body, scale, scale);
-
-    this.circle.radius = (this.text.value.length + 2) * 5;
-
-    scale = this.circle.radius * 2;
-    Matter.Body.scale(this.body, scale, scale);
-
     this.object.rotation = this.body.angle;
 
     return this;
@@ -115,6 +107,23 @@ export default class Group {
   }
   set word(v) {
     this.text.value = v;
+  }
+
+  get scale() {
+    return this.circle.radius * 2;
+  }
+  set scale(v) {
+
+    var scale;
+
+    scale = 1 / (this.circle.radius * 2);
+    Matter.Body.scale(this.body, scale, scale);
+
+    this.circle.radius = v;
+
+    scale = this.circle.radius * 2;
+    Matter.Body.scale(this.body, scale, scale);
+
   }
 
 }

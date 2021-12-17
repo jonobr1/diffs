@@ -109,6 +109,7 @@ export default function Visualization(props) {
 
       for (var i = index; i < limit; i++) {
 
+        var ref;
         var word = text[i].trim().replace(/\W/ig, '');
         var group = groups[i];
 
@@ -117,7 +118,8 @@ export default function Visualization(props) {
           if (group) {
             toHide.push(group);
           }
-          // TODO: Update the linked group's scale
+          ref = obj.registry.get(word);
+          ref.scale = 5 * (word.length + 2) * obj.registry.stats[word];
           continue;
         }
 
@@ -129,6 +131,7 @@ export default function Visualization(props) {
 
         obj.registry.add(word, group);
 
+        group.scale = 5 * (word.length + 2);
         group.destination = obj.registry.destination;
         group.word = word;
         group.object.visible = true;
@@ -205,9 +208,9 @@ export default function Visualization(props) {
           toHide.push(group);
           registry.increment(word, count);
           if (registry.invocations[word] === 2) {
-            // TODO: Set scale here
             ref = registry.get(word);
             ref.destination = registry.destination;
+            ref.scale = 5 * (word.length + 2) * registry.stats[word];
           }
         } else {
           registry.add(word, group);
