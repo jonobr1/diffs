@@ -53,9 +53,21 @@ export default function Visualization(props) {
       Matter.Engine.update(engine, timeDelta);
 
       var { objects } = refs.current;
+      var needsUpdate = false;
+      var i, obj;
 
-      for (var i = 0; i < objects.length; i++) {
-        var obj = objects[i];
+      for (i = 0; i < objects.length; i++) {
+        obj = objects[i];
+        if (requiresUpdate(obj)) {
+          needsUpdate = true;
+        }
+      }
+
+      for (i = 0; i < objects.length; i++) {
+        obj = objects[i];
+        if (needsUpdate) {
+          obj.needsUpdate = true;
+        }
         coordinate(obj, objects.length);
         tick(obj);
       }
@@ -66,7 +78,7 @@ export default function Visualization(props) {
 
     }
 
-    function coordinate(obj, total) {
+    function requiresUpdate(obj) {
 
       if (!obj.domElement) {
         var selector = `div.text div.column:nth-child(${obj.id + 1}) textarea`;
@@ -77,11 +89,17 @@ export default function Visualization(props) {
         obj.groups.index = 0;
       }
 
-      var value = obj.domElement.value;
+      return obj.domElement.value !== obj.previousText;
 
-      if (value !== obj.previousText) {
+    }
 
-        obj.previousText = value;
+    function coordinate(obj, total) {
+
+      var needsUpdate = false;
+
+      if (obj.needsUpdate) {
+
+        obj.previousText = obj.domElement.value;
 
         obj.index = 0;
         obj.tickId = 0;
@@ -93,8 +111,10 @@ export default function Visualization(props) {
           obj.registry = new Registry();
         }
 
+        needsUpdate = true;
         registry.needsUpdate = true;
         registry.clear();
+        obj.needsUpdate = false;
 
       }
 
@@ -134,9 +154,14 @@ export default function Visualization(props) {
 
         obj.registry.add(word, group);
 
-        group.color = color;
-        group.scale = 5 * (word.length + 2);
-        group.destination = obj.registry.destination;
+        ref = registry.get(word);
+
+        if (!ref || ref.id !== group.id) {
+          group.color = color;
+          group.scale = 5 * (word.length + 2);
+          group.destination = obj.registry.destination;
+        }
+
         group.word = word;
         group.object.visible = true;
 
@@ -152,15 +177,17 @@ export default function Visualization(props) {
         }
       }
 
+      return needsUpdate;
+
     }
 
     function tick(obj) {
 
       var { tickId, groups } = obj;
 
-      for (var j = tickId; j < Math.min(tickId + MAX_ITERATIONS, groups.length); j++) {
+      for (var i = tickId; i < Math.min(tickId + MAX_ITERATIONS, groups.length); i++) {
 
-        var group = groups[j];
+        var group = groups[i];
 
         if (!group.object.visible) {
           continue;
@@ -170,7 +197,7 @@ export default function Visualization(props) {
 
       }
 
-      if (j >= groups.length - 1) {
+      if (i >= groups.length - 1) {
         obj.tickId = 0;
       } else {
         obj.tickId = i;
@@ -182,9 +209,10 @@ export default function Visualization(props) {
 
       var { objects } = refs.current;
       var needsUpdate = false;
+      var obj;
 
       for (var i = 0; i < objects.length; i++) {
-        var obj = objects[i];
+        obj = objects[i];
         if (merge(obj)) {
           needsUpdate = true;
         }

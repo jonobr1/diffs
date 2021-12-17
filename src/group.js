@@ -2,6 +2,8 @@ import Two from 'two.js';
 import Matter from 'matter-js';
 import Easing from './utils/easing.js';
 
+var ID = 0;
+
 var styles = {
   family: 'Arial',
   size: 17,
@@ -12,6 +14,7 @@ var styles = {
 
 export default class Group {
 
+  id = ID++;
   object = new Two.Group();
   velocity = new Two.Vector();
 
