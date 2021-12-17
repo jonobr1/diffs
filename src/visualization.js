@@ -1,11 +1,13 @@
 import React, { useEffect, useRef } from 'react';
 import Two from 'two.js';
+import ZUI from 'two.js/extras/jsm/zui.js';
 import Matter from 'matter-js';
+import Legend from './legend.js';
 import Group from './group.js';
 import Registry from './registry.js';
 import { random } from './utils/colors.js';
 
-var MAX_ITERATIONS = 100;
+var MAX_ITERATIONS = 50;
 
 export default function Visualization(props) {
 
@@ -17,10 +19,7 @@ export default function Visualization(props) {
 
   function setup() {
 
-    var registry = new Registry();
     var engine = Matter.Engine.create();
-
-    registry.color = random(0, 0.5);
 
     engine.gravity.x = 0;
     engine.gravity.y = 0;
@@ -31,6 +30,16 @@ export default function Visualization(props) {
       autostart: true
     }).appendTo(domElement.current);
 
+    var stage = two.makeGroup();
+    var legend = new Legend();
+
+    two.add(legend.group);
+
+    var registry = new Registry();
+    registry.color = random(0, 0.5);
+
+    addZUI();
+
     two.bind('update', update)
        .bind('resize', resize);
 
@@ -39,13 +48,145 @@ export default function Visualization(props) {
     return unmount;
 
     function unmount() {
+
       two.scene.remove();
       two.release(two.scene);
+
       domElement.current.removeChild(two.renderer.domElement);
+
+      two.renderer.domElement.removeEventListener('mousedown', mousedown, false);
+      two.renderer.domElement.removeEventListener('mousewheel', mousewheel, false);
+      two.renderer.domElement.removeEventListener('wheel', mousewheel, false);
+
+      two.renderer.domElement.removeEventListener('touchstart', touchstart, false);
+      two.renderer.domElement.removeEventListener('touchmove', touchmove, false);
+      two.renderer.domElement.removeEventListener('touchend', touchend, false);
+      two.renderer.domElement.removeEventListener('touchcancel', touchend, false);
+
     }
 
     function resize() {
-      two.scene.position.set(two.width / 2, two.height / 2);
+      registry.destination.set(two.width / 2, two.height / 2);
+      legend.group.position.set(0, two.height);
+    }
+
+    function addZUI() {
+
+      var domElement = two.renderer.domElement;
+      var zui = new ZUI(stage);
+      var mouse = new Two.Vector();
+      var touches = {};
+      var distance = 0;
+
+      zui.addLimits(0.06, 8);
+
+      domElement.addEventListener('mousedown', mousedown, false);
+      domElement.addEventListener('mousewheel', mousewheel, false);
+      domElement.addEventListener('wheel', mousewheel, false);
+
+      domElement.addEventListener('touchstart', touchstart, false);
+      domElement.addEventListener('touchmove', touchmove, false);
+      domElement.addEventListener('touchend', touchend, false);
+      domElement.addEventListener('touchcancel', touchend, false);
+
+      function mousedown(e) {
+        mouse.x = e.clientX;
+        mouse.y = e.clientY;
+        window.addEventListener('mousemove', mousemove, false);
+        window.addEventListener('mouseup', mouseup, false);
+      }
+
+      function mousemove(e) {
+        var dx = e.clientX - mouse.x;
+        var dy = e.clientY - mouse.y;
+        zui.translateSurface(dx, dy);
+        mouse.set(e.clientX, e.clientY);
+      }
+
+      function mouseup(e) {
+        window.removeEventListener('mousemove', mousemove, false);
+        window.removeEventListener('mouseup', mouseup, false);
+      }
+
+      function mousewheel(e) {
+        var dy = (e.wheelDeltaY || - e.deltaY) / 1000;
+        zui.zoomBy(dy, e.clientX, e.clientY);
+      }
+
+      function touchstart(e) {
+        switch (e.touches.length) {
+          case 2:
+            pinchstart(e);
+            break;
+          case 1:
+            panstart(e)
+            break;
+        }
+      }
+
+      function touchmove(e) {
+        switch (e.touches.length) {
+          case 2:
+            pinchmove(e);
+            break;
+          case 1:
+            panmove(e)
+            break;
+        }
+      }
+
+      function touchend(e) {
+        touches = {};
+        var touch = e.touches[ 0 ];
+        if (touch) {  // Pass through for panning after pinching
+          mouse.x = touch.clientX;
+          mouse.y = touch.clientY;
+        }
+      }
+
+      function panstart(e) {
+        var touch = e.touches[ 0 ];
+        mouse.x = touch.clientX;
+        mouse.y = touch.clientY;
+      }
+
+      function panmove(e) {
+        var touch = e.touches[ 0 ];
+        var dx = touch.clientX - mouse.x;
+        var dy = touch.clientY - mouse.y;
+        zui.translateSurface(dx, dy);
+        mouse.set(touch.clientX, touch.clientY);
+      }
+
+      function pinchstart(e) {
+        for (var i = 0; i < e.touches.length; i++) {
+          var touch = e.touches[ i ];
+          touches[ touch.identifier ] = touch;
+        }
+        var a = touches[ 0 ];
+        var b = touches[ 1 ];
+        var dx = b.clientX - a.clientX;
+        var dy = b.clientY - a.clientY;
+        distance = Math.sqrt(dx * dx + dy * dy);
+        mouse.x = dx / 2 + a.clientX;
+        mouse.y = dy / 2 + a.clientY;
+      }
+
+      function pinchmove(e) {
+        for (var i = 0; i < e.touches.length; i++) {
+          var touch = e.touches[ i ];
+          touches[ touch.identifier ] = touch;
+        }
+        var a = touches[ 0 ];
+        var b = touches[ 1 ];
+        var dx = b.clientX - a.clientX;
+        var dy = b.clientY - a.clientY;
+        var d = Math.sqrt(dx * dx + dy * dy);
+        var delta = d - distance;
+        zui.zoomBy(delta / 250, mouse.x, mouse.y);
+        distance = d;
+      }
+
     }
 
     function update(frameCount, timeDelta) {
@@ -55,6 +196,12 @@ export default function Visualization(props) {
       var { objects } = refs.current;
       var needsUpdate = false;
       var i, obj;
+
+      if ((legend.props && legend.props.length) !== objects.length) {
+        objects.registry = registry;
+        legend.props = objects;
+        legend.update();
+      }
 
       for (i = 0; i < objects.length; i++) {
         obj = objects[i];
@@ -124,8 +271,8 @@ export default function Visualization(props) {
 
       var rad = Math.min(two.width, two.height) * 0.33;
       var theta = ((obj.id + 0.5) / total) * Math.PI * 2;
-      var x = rad * Math.cos(theta);
-      var y = rad * Math.sin(theta);
+      var x = rad * Math.cos(theta) + two.width / 2;
+      var y = rad * Math.sin(theta) + two.height / 2;
       var toHide = [];
 
       obj.registry.destination.set(x, y);
@@ -149,7 +296,7 @@ export default function Visualization(props) {
         if (!group) {
           group = new Group(engine, word, color, obj.registry.destination);
           groups.push(group);
-          two.add(group.object);
+          stage.add(group.object);
         }
 
         obj.registry.add(word, group);
@@ -157,6 +304,7 @@ export default function Visualization(props) {
         ref = registry.get(word);
 
         if (!ref || ref.id !== group.id) {
+          group.life = 1;
           group.color = color;
           group.scale = 5 * (word.length + 2);
           group.destination = obj.registry.destination;
@@ -197,7 +345,7 @@ export default function Visualization(props) {
 
       }
 
-      if (i >= groups.length - 1) {
+      if (i >= groups.length) {
         obj.tickId = 0;
       } else {
         obj.tickId = i;
@@ -244,6 +392,7 @@ export default function Visualization(props) {
             ref.destination = registry.destination;
             ref.scale = 5 * (word.length + 2) * registry.stats[word];
             ref.color = registry.color;
+            ref.life = 1;
           }
         } else {
           registry.add(word, group);
