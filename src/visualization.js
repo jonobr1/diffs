@@ -430,6 +430,12 @@ export default function Visualization(props) {
   }
 
   function assign() {
+
+    if (refs.current.objects.length > props.objects.length) {
+      var objects = refs.current.objects.slice(props.objects.length);
+      // TODO: Remove
+    }
+
     refs.current.objects = props.objects;
   }
 
