@@ -98,7 +98,7 @@ export default function App(props) {
           <label htmlFor="viz-visibility">Visuals Visible</label>
         </span>
         <button onClick={ save }>
-          Save
+          Save Image
         </button>
       </div>
 
