@@ -2,10 +2,10 @@ import React, { useEffect, useRef } from 'react';
 import Two from 'two.js';
 import ZUI from 'two.js/extras/jsm/zui.js';
 import Matter from 'matter-js';
-import Legend from './legend.js';
+import Legend from '../legend.js';
 import Group from './group.js';
-import Registry from './registry.js';
-import { random } from './utils/colors.js';
+import Registry from '../registry.js';
+import { random } from '../utils/colors.js';
 
 var MAX_ITERATIONS = 50;
 

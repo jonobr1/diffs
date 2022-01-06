@@ -1,8 +1,8 @@
 import Two from 'two.js';
 import Matter from 'matter-js';
-import Easing from './utils/easing.js';
-import { styles as defaultStyles } from './utils/styles.js';
-import { palette } from './utils/colors.js';
+import Easing from '../utils/easing.js';
+import { styles as defaultStyles } from '../utils/styles.js';
+import { palette } from '../utils/colors.js';
 
 var ID = 0;
 
@@ -20,6 +20,7 @@ export default class Group {
 
   engine = null;
   circle = null;
+  text = null;
   destination = null;
   speed = 100;
 

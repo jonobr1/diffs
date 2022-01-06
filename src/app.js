@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import Visualization from './visualization.js';
+import Results from './results/index.js';
 import { random } from './utils/colors.js';
 
 import "./main.css";
@@ -45,10 +45,12 @@ export default function App(props) {
   }
 
   function save() {
-    var canvas = document.querySelector('canvas');
+    var canvas = document.querySelector('svg');
+    var serializer = new XMLSerializer();
+    var source = serializer.serializeToString(canvas);
     var a = document.createElement('a');
-    a.href = canvas.toDataURL('image/png');
-    a.download = 'diffs.png';
+    a.href = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(source)}`;
+    a.download = 'diffs.svg';
     a.style.display = 'none';
     document.body.appendChild(a);
     a.click();
@@ -75,7 +77,7 @@ export default function App(props) {
     <div ref={ domElement } className="app">
 
       <div className={ ['view', 'visualization', vizIsVisible ? 'enabled' : ''].join(' ') }>
-        <Visualization objects={ texts } />
+        <Results objects={ texts } />
       </div>
 
       <div className={ ['view', 'text', textIsVisible ? 'enabled' : ''].join(' ') }>

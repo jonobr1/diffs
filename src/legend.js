@@ -12,13 +12,14 @@ var styles = {
 class Line {
 
   group = new Two.Group();
-  text = new Two.Text('', styles.size * 2, 0, styles);
+  text = new Two.Text('', styles.size * 2, styles.size * 0.33, styles);
   symbol = new Two.Circle(styles.size, 0, styles.size / 3);
 
   constructor() {
     this.symbol.noStroke();
     this.group.add(this.text, this.symbol);
     this.group.dispose = this.dispose.bind(this);
+    this.symbol.stroke = 'none';
   }
 
   dispose() {
