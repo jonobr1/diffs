@@ -206,7 +206,6 @@ export default function Results(props) {
       }
 
       if (requiresUpdate(objects)) {
-        console.log('needs reset');
         reset();
       }
 
@@ -232,9 +231,8 @@ export default function Results(props) {
         var obj = objects[i];
         var a = obj.previousText === undefined;
         var b = !obj.domElement;
-        var c = obj.previousText !== obj.domElement.value;
 
-        if (a || b || c) {
+        if (a || b || obj.previousText !== obj.domElement.value) {
           return true;
         }
 
@@ -305,8 +303,6 @@ export default function Results(props) {
           needsUpdate = true;
         }
       }
-
-      console.log('registry.needsUpdate', needsUpdate);
 
       registry.needsUpdate = needsUpdate;
 
@@ -384,8 +380,6 @@ export default function Results(props) {
       }
 
     }
-
-    console.log('reset');
 
     registry.needsUpdate = true;
     registry.clear();
