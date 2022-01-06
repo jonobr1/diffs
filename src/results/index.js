@@ -293,6 +293,8 @@ export default function Results(props) {
 
     function reconcile() {
 
+      console.log('reconciling');
+
       var { objects } = refs.current;
       var needsUpdate = false;
       var obj;
@@ -379,10 +381,10 @@ export default function Results(props) {
 
       }
 
-    }
+      registry.needsUpdate = true;
+      registry.clear();
 
-    registry.needsUpdate = true;
-    registry.clear();
+    }
 
   }
 
