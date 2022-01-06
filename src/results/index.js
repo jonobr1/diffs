@@ -276,10 +276,11 @@ export default function Results(props) {
 
         ref = registry.get(word);
 
-        if (!ref || ref.id !== group.id) {
-          group.color = color;
+        if (group.object.parent !== groups) {
+          obj.groups.add(group.object);
         }
 
+        group.color = color;
         group.object.position.y = yid * (defaultStyles.leading * 1.15);
         group.word = word;
         group.count = 1;
@@ -292,8 +293,6 @@ export default function Results(props) {
     }
 
     function reconcile() {
-
-      console.log('reconciling');
 
       var { objects } = refs.current;
       var needsUpdate = false;
@@ -330,6 +329,8 @@ export default function Results(props) {
             ref = registry.get(word);
             ref.count = registry.stats[word];
             ref.color = registry.color;
+            ref.object.position.x = 40;
+            registry.group.add(ref.object);
           }
         } else {
           registry.add(word, group);
@@ -375,12 +376,18 @@ export default function Results(props) {
         if (!obj.groups) {
           obj.groups = new Two.Group;
           obj.groups.position.y = 75;
-          obj.groups.position.x = i * 250 + 40;
+          obj.groups.position.x = (i + 1) * 250;
           stage.add(obj.groups);
         }
 
       }
 
+      if (!registry.group) {
+        registry.group = new Two.Group();
+        registry.group.position.y = 75;
+        registry.group.position.x = 40;
+        stage.add(registry.group);
+      }
       registry.needsUpdate = true;
       registry.clear();
 
