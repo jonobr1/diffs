@@ -25,7 +25,7 @@ export default function Visualization(props) {
     engine.gravity.y = 0;
 
     var two = new Two({
-      type: Two.Types.canvas,
+      type: Two.Types.svg,
       fullscreen: true,
       autostart: true
     }).appendTo(domElement.current);

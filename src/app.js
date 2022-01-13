@@ -45,10 +45,12 @@ export default function App(props) {
   }
 
   function save() {
-    var canvas = document.querySelector('canvas');
+    var canvas = document.querySelector('svg');
+    var serializer = new XMLSerializer();
+    var source = serializer.serializeToString(canvas);
     var a = document.createElement('a');
-    a.href = canvas.toDataURL('image/png');
-    a.download = 'diffs.png';
+    a.href = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(source)}`;
+    a.download = 'diffs.svg';
     a.style.display = 'none';
     document.body.appendChild(a);
     a.click();
