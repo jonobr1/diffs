@@ -42,7 +42,8 @@ div#react div.app div.text > div.column textarea {
   height: 100%;
   box-sizing: border-box;
   resize: none;
-  background: transparent;
+  background: rgba(255, 255, 255, 0.5);
+  color: black;
 }
 div#react div.app div.menu {
   padding: 0 8.5px;

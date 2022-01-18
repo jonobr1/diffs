@@ -64,7 +64,7 @@ export default function App(props) {
       width: `${(100 / texts.length).toFixed(3)}vw`
     };
     var ts = {
-      color: text.color
+      // color: text.color
     };
     return (
       <div key={ i } className="column" style={ ds }>
