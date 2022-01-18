@@ -1,5 +1,5 @@
 var styles = {
-  family: 'Arial',
+  family: '"Inter", Helvetica, Arial, sans-serif',
   size: 17,
   leading: 30,
   characterWidth: 10,
