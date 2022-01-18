@@ -3,13 +3,40 @@
   padding: 0;
 }
 
-@line-height: 25px;
-@font-size: 17px;
+@line-height: 24px;
+@font-size: 16px;
+@font-stack: "Inter", Helvetica, Arial, sans-serif;
+@font-weight: 300;
 
 div#react {
 
+  font-family: @font-stack;
+  font-weight: @font-weight;
   font-size: @font-size;
   line-height: @line-height;
+
+  input,
+  textarea,
+  button {
+    font-family: @font-stack;
+    font-weight: @font-weight;
+    font-size: @font-size;
+    line-height: @line-height;
+  }
+
+  button {
+    padding: 0 @font-size * 0.25;
+  }
+
+  button,
+  label,
+  input[type=checkbox] {
+    cursor: pointer;
+  }
+
+  input[type=checkbox] {
+    vertical-align: middle;
+  }
 
   div.app {
 
@@ -22,6 +49,16 @@ div#react {
       &.enabled {
         opacity: 1;
         pointer-events: auto;
+      }
+
+      &.highlighting {
+        div.textarea {
+          cursor: pointer;
+          span.highlight {
+            background: yellow;
+            border-radius: @font-size * 0.25;
+          }
+        }
       }
 
     }
@@ -48,17 +85,38 @@ div#react {
       & > div.column {
 
         display: inline-block;
+        padding: 0 @font-size * 0.5 @font-size * 0.5;
+        box-sizing: border-box;
         flex-grow: 1;
         overflow: hidden;
 
-        textarea {
+        input[type=text] {
+          width: 100%;
+          border: 1px solid #ccc;
+          border-radius: @font-size * 0.25;
+          padding: 0 @line-height * 0.25;
+          box-sizing: border-box;
+          font-weight: 700;
+          color: rgba(0, 0, 0, 0.75);
+        }
+
+        textarea,
+        div.textarea {
           display: block;
           width: 100%;
-          height: 100%;
+          height: calc(100% - (@line-height * 1.66));
           box-sizing: border-box;
           resize: none;
           background: rgba(255, 255, 255, 0.75);
           color: black;
+          border: 1px solid #ccc;
+          border-radius: @font-size * 0.25;
+          margin-top: @line-height * 0.25;
+          padding: 0 @line-height * 0.25;
+          overflow: scroll;
+          p, div {
+            background: transparent;
+          }
         }
 
       }
@@ -68,6 +126,11 @@ div#react {
     div.menu {
       padding: 0 @font-size * 0.5;
       line-height: @line-height * 2;
+      input,
+      button,
+      label {
+        font-size: @font-size * 0.75;
+      }
       & > * {
         margin-right: @font-size * 0.5;
       }

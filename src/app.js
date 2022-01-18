@@ -10,6 +10,7 @@ export default function App(props) {
 
   var [textIsVisible, setTextIsVisible] = useState(true);
   var [vizIsVisible, setVizIsVisible] = useState(true);
+  var [highlightIsVisible, setHighlightIsVisible] = useState(false);
   var [texts, setTexts] = useState([{ id: 0, name: '', index: 0, color: random(0, 0.5) }]);
 
   function increase() {
@@ -34,9 +35,13 @@ export default function App(props) {
     setVizIsVisible(!vizIsVisible);
   }
 
+  function toggleHighlights() {
+    setHighlightIsVisible(!highlightIsVisible);
+  }
+
   function focus() {
     requestAnimationFrame(function() {
-      var selector = 'div.text div.column:last-child textarea';
+      var selector = 'div.text div.column:last-child div.textarea';
       var textarea = domElement.current.querySelector(selector);
       if (textarea) {
         textarea.focus();
@@ -64,16 +69,102 @@ export default function App(props) {
     var ds = {
       width: `${(100 / texts.length).toFixed(3)}vw`
     };
-    var ts = {
-      // color: text.color
-    };
 
     return (
       <div key={ i } className="column" style={ ds }>
         <input type="text" name="title" defaultValue={ `Text ${i + 1}` } onChange={ update } />
-        <textarea style={ ts } />
+        <div
+          id={ `ta-${i}` }
+          tab={ i }
+          className="textarea"
+          contentEditable={ !highlightIsVisible }
+          onClick={ click }
+          onPaste={ paste } />
       </div>
     );
+
+    function click(e) {
+      if (!highlightIsVisible) {
+        return;
+      }
+      var selection = window.getSelection();
+      if (typeof selection.anchorOffset === 'number' && selection.anchorOffset === selection.focusOffset) {
+        highlightAt(selection.anchorNode);
+      }
+    }
+
+    function paste(e) {
+      e.preventDefault();
+      var text = e.clipboardData.getData('text/plain');
+      document.execCommand('insertHTML', false, text);
+    }
+
+    function highlightAt(elem) {
+
+      var selection = window.getSelection();
+      var text = elem.textContent;
+      var pos = selection.anchorOffset;
+
+      if (/[\s]/i.test(text[pos])) {
+        if (pos > 0 && /\w/i.test(text[pos - 1])) {
+          pos--;
+        } else if (pos < text.length && /\w/i.test(text[pos + 1])) {
+          pos++;
+        }
+      }
+
+      var start = pos;
+      var end = pos;
+      var startFound = false;
+      var endFound = false;
+
+      while (!startFound || !endFound) {
+        if (!startFound) {
+          if (start <= 0 || /[\s]/i.test(text[start])) {
+            startFound = true;
+          } else {
+            start = Math.max(0, start - 1);
+          }
+        }
+        if (!endFound) {
+          if (end >= text.length || /[\s]/i.test(text[end])) {
+            endFound = true;
+          } else {
+            end = Math.min(text.length, end + 1);
+          }
+        }
+      }
+
+      highlight(text.slice(start, end).replace(/\.\,/ig, '').trim());
+
+    }
+
+    function highlight(word) {
+
+      if (!word) {
+        return;
+      }
+
+      var elems = document.body.querySelectorAll('div.textarea');
+      var index = 0;
+      var regex = new RegExp(`(^|\\s)(${word})(\\s|$)`, 'ig');
+      var response = `$1<span class="highlight">${word}</span>$3`;
+
+      tick();
+
+      function tick() {
+
+        var elem = elems[index];
+
+        if (elem) {
+          index++;
+          elem.innerHTML = elem.textContent.replace(regex, response);
+          requestAnimationFrame(tick);
+        }
+
+      }
+
+    }
 
     function update(e) {
       var value = e.target.value;
@@ -93,7 +184,7 @@ export default function App(props) {
         <Results objects={ texts } />
       </div>
 
-      <div className={ ['view', 'text', textIsVisible ? 'enabled' : ''].join(' ') }>
+      <div className={ ['view', 'text', textIsVisible ? 'enabled' : '', highlightIsVisible ? 'highlighting' : ''].join(' ') }>
         { texts.map(render) }
       </div>
 
@@ -111,6 +202,10 @@ export default function App(props) {
         <span>
           <input id="viz-visibility" type="checkbox" defaultChecked={ vizIsVisible } onChange={ toggleVisuals } />
           <label htmlFor="viz-visibility">Visuals Visible</label>
+        </span>
+        <span>
+          <input id="highlight-visibility" type="checkbox" defaultChecked={ highlightIsVisible } onChange={ toggleHighlights } />
+          <label htmlFor="highlight-visibility">Highlight Mode</label>
         </span>
         <button onClick={ save }>
           Save Image

@@ -5,7 +5,7 @@ import Legend from '../legend.js';
 import Group from './group.js';
 import Registry from '../registry.js';
 import { random } from '../utils/colors.js';
-import {styles as defaultStyles } from '../utils/styles.js';
+import { styles as defaultStyles } from '../utils/styles.js';
 
 var MAX_ITERATIONS = 50;
 
@@ -232,7 +232,7 @@ export default function Results(props) {
         var a = obj.previousText === undefined;
         var b = !obj.domElement;
 
-        if (a || b || obj.previousText !== obj.domElement.value) {
+        if (a || b || obj.previousText !== obj.domElement.textContent) {
           return true;
         }
 
@@ -245,7 +245,7 @@ export default function Results(props) {
     function layout(obj, total) {
 
       var { index, domElement, groups, color } = obj;
-      var text = domElement.value.toLowerCase().split(/\s+/i).filter(isWord);
+      var text = domElement.textContent.toLowerCase().split(/\s+/i).filter(isWord);
       var limit = Math.min(index + MAX_ITERATIONS, text.length);
       var yid = index;
 
@@ -361,11 +361,11 @@ export default function Results(props) {
         obj.mergeId = 0;
 
         if (!obj.domElement) {
-          var selector = `div.text div.column:nth-child(${obj.id + 1}) textarea`;
+          var selector = `div.text div.column:nth-child(${obj.id + 1}) div.textarea`;
           obj.domElement = document.querySelector(selector);
         }
 
-        obj.previousText = obj.domElement.value;
+        obj.previousText = obj.domElement.textContent;
 
         if (obj.registry) {
           obj.registry.clear();

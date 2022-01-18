@@ -238,7 +238,7 @@ export default function Visualization(props) {
         obj.groups.index = 0;
       }
 
-      return obj.domElement.value !== obj.previousText;
+      return obj.domElement.textContent !== obj.previousText;
 
     }
 
@@ -248,7 +248,7 @@ export default function Visualization(props) {
 
       if (obj.needsUpdate) {
 
-        obj.previousText = obj.domElement.value;
+        obj.previousText = obj.domElement.textContent;
 
         obj.index = 0;
         obj.tickId = 0;
@@ -268,7 +268,7 @@ export default function Visualization(props) {
       }
 
       var { index, domElement, groups, color } = obj;
-      var text = domElement.value.toLowerCase().split(/\s+/i).filter(isWord);
+      var text = domElement.textContent.toLowerCase().split(/\s+/i).filter(isWord);
       var limit = Math.min(index + MAX_ITERATIONS, text.length);
 
       var rad = Math.min(two.width, two.height) * 0.33;
