@@ -10,7 +10,7 @@ export default function App(props) {
 
   var [textIsVisible, setTextIsVisible] = useState(true);
   var [vizIsVisible, setVizIsVisible] = useState(true);
-  var [texts, setTexts] = useState([{ id: 0, index: 0, color: random(0, 0.5) }]);
+  var [texts, setTexts] = useState([{ id: 0, name: '', index: 0, color: random(0, 0.5) }]);
 
   function increase() {
     var result = texts.slice(0);
@@ -60,17 +60,30 @@ export default function App(props) {
   //
 
   function render(text, i) {
+
     var ds = {
       width: `${(100 / texts.length).toFixed(3)}vw`
     };
     var ts = {
       // color: text.color
     };
+
     return (
       <div key={ i } className="column" style={ ds }>
+        <input type="text" name="title" defaultValue={ `Text ${i + 1}` } onChange={ update } />
         <textarea style={ ts } />
       </div>
     );
+
+    function update(e) {
+      var value = e.target.value;
+      setTexts(function(texts) {
+        var result = [ ...texts ];
+        result[i].name = value;
+        return result;
+      });
+    }
+
   }
 
   return (

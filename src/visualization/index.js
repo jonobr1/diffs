@@ -45,6 +45,8 @@ export default function Visualization(props) {
 
     resize();
 
+    refs.current.legend = legend;
+
     return unmount;
 
     function unmount() {
@@ -437,6 +439,11 @@ export default function Visualization(props) {
     }
 
     refs.current.objects = props.objects;
+
+    if (refs.current.legend) {
+      refs.current.legend.update();
+    }
+
   }
 
   return <div ref={ domElement } />;

@@ -397,6 +397,11 @@ export default function Results(props) {
 
   function assign() {
     refs.current.objects = props.objects;
+
+    if (refs.current.legend) {
+      refs.current.legend.update();
+    }
+
   }
 
   return <div ref={ domElement } />;

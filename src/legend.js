@@ -79,7 +79,7 @@ export default class Legend {
 
   update() {
 
-    if (!(typeof this.props === 'object' && this.props.length > 0)) {
+    if (!Array.isArray(this.props)) {
       return;
     }
 
