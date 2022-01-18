@@ -3,8 +3,29 @@
   padding: 0;
 }
 div#react {
-  font-size: 17px;
-  line-height: 25px;
+  font-family: "Inter", Helvetica, Arial, sans-serif;
+  font-weight: 300;
+  font-size: 16px;
+  line-height: 24px;
+}
+div#react input,
+div#react textarea,
+div#react button {
+  font-family: "Inter", Helvetica, Arial, sans-serif;
+  font-weight: 300;
+  font-size: 16px;
+  line-height: 24px;
+}
+div#react button {
+  padding: 0 4px;
+}
+div#react button,
+div#react label,
+div#react input[type=checkbox] {
+  cursor: pointer;
+}
+div#react input[type=checkbox] {
+  vertical-align: middle;
 }
 div#react div.app div.view {
   opacity: 0;
@@ -14,6 +35,13 @@ div#react div.app div.view {
 div#react div.app div.view.enabled {
   opacity: 1;
   pointer-events: auto;
+}
+div#react div.app div.view.highlighting div.textarea {
+  cursor: pointer;
+}
+div#react div.app div.view.highlighting div.textarea span.highlight {
+  background: yellow;
+  border-radius: 4px;
 }
 div#react div.app div.visualization {
   position: absolute;
@@ -26,33 +54,61 @@ div#react div.app div.text {
   display: flex;
   justify-content: flex-start;
   flex-wrap: nowrap;
-  top: 50px;
+  top: 48px;
   left: 0;
   width: 100%;
-  height: calc(100% - (25px * 2));
+  height: calc(100% - (24px * 2));
 }
 div#react div.app div.text > div.column {
   display: inline-block;
+  padding: 0 8px 8px;
+  box-sizing: border-box;
   flex-grow: 1;
   overflow: hidden;
 }
-div#react div.app div.text > div.column textarea {
+div#react div.app div.text > div.column input[type=text] {
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 0 6px;
+  box-sizing: border-box;
+  font-weight: 700;
+  color: rgba(0, 0, 0, 0.75);
+}
+div#react div.app div.text > div.column textarea,
+div#react div.app div.text > div.column div.textarea {
   display: block;
   width: 100%;
-  height: 100%;
+  height: calc(100% - (24px * 1.66));
   box-sizing: border-box;
   resize: none;
   background: rgba(255, 255, 255, 0.75);
   color: black;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-top: 6px;
+  padding: 0 6px;
+  overflow: scroll;
+}
+div#react div.app div.text > div.column textarea p,
+div#react div.app div.text > div.column div.textarea p,
+div#react div.app div.text > div.column textarea div,
+div#react div.app div.text > div.column div.textarea div {
+  background: transparent;
 }
 div#react div.app div.menu {
-  padding: 0 8.5px;
-  line-height: 50px;
+  padding: 0 8px;
+  line-height: 48px;
+}
+div#react div.app div.menu input,
+div#react div.app div.menu button,
+div#react div.app div.menu label {
+  font-size: 12px;
 }
 div#react div.app div.menu > * {
-  margin-right: 8.5px;
+  margin-right: 8px;
 }
 div#react div.app div.menu input + label {
-  margin-left: 4.25px;
+  margin-left: 4px;
 }
 /*# sourceMappingURL=main.css.map */
