@@ -236,7 +236,7 @@ export default function Results(props) {
         var a = object.previousText === undefined;
         var b = !object.domElement;
 
-        if (a || b || object.previousText !== object.domElement.textContent) {
+        if (a || b || object.previousText !== object.domElement.innerText) {
           return true;
         }
 
@@ -249,7 +249,7 @@ export default function Results(props) {
     function layout(object, total) {
 
       var { index, domElement, groups, color, yid } = object;
-      var text = domElement.textContent.toLowerCase().split(/\s+/i).filter(isWord);
+      var text = domElement.innerText.toLowerCase().split(/\s+/i).filter(isWord);
       var limit = Math.min(index + MAX_ITERATIONS, text.length);
 
       if (!object.processing || object.processing && index >= text.length) {
@@ -382,7 +382,7 @@ export default function Results(props) {
           object.domElement = document.querySelector(selector);
         }
 
-        object.previousText = object.domElement.textContent;
+        object.previousText = object.domElement.innerText;
 
         if (object.registry) {
           object.registry.clear();
