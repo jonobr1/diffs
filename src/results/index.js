@@ -250,6 +250,11 @@ export default function Results(props) {
 
       if (!object.processing || object.processing && index >= text.length) {
         object.processing = false;
+        if (text.length < groups.children.length) {
+          for (var j = text.length; j < groups.children.length; j++) {
+            groups.children[j].visible = false;
+          }
+        }
         return;
       }
 
@@ -297,12 +302,18 @@ export default function Results(props) {
 
       var { objects } = refs.current;
       var needsUpdate = false;
+      var i, object;
 
-      for (var i = 0; i < objects.length; i++) {
-        var object = objects[i];
+      for (i = 0; i < objects.length; i++) {
+        object = objects[i];
         if (object.processing) {
           needsUpdate = true;
-        } else {
+        }
+      }
+
+      if (!needsUpdate) {
+        for (i = 0; i < objects.length; i++) {
+          object = objects[i];
           if (merge(object)) {
             needsUpdate = true;
           }
@@ -394,6 +405,10 @@ export default function Results(props) {
         registry.group.position.y = 75;
         registry.group.position.x = 40;
         stage.add(registry.group);
+      } else {
+        for (var j = 0; j < registry.group.children.length; j++) {
+          registry.group.children[j].visible = false;
+        }
       }
       registry.needsUpdate = true;
       registry.clear();
