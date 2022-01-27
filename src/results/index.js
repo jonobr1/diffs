@@ -344,8 +344,9 @@ export default function Results(props) {
             ref = registry.get(word);
             ref.count = registry.stats[word];
             ref.color = registry.color;
-            ref.position.x = 40;
+            ref.position.y = registry.yid * (defaultStyles.leading * 1.15);
             registry.group.add(ref);
+            registry.yid++;
           }
         } else {
           registry.add(word, group);
@@ -391,7 +392,7 @@ export default function Results(props) {
 
         if (!object.groups) {
           object.groups = new Two.Group;
-          object.groups.position.y = 75;
+          object.groups.position.y = 100;
           object.groups.position.x = (i + 1) * 250;
           stage.add(object.groups);
         }
@@ -400,7 +401,7 @@ export default function Results(props) {
 
       if (!registry.group) {
         registry.group = new Two.Group();
-        registry.group.position.y = 75;
+        registry.group.position.y = 100;
         registry.group.position.x = 40;
         stage.add(registry.group);
       } else {
@@ -409,6 +410,7 @@ export default function Results(props) {
           registry.group.children[registry.group.children.length - 1].remove();
         }
       }
+      registry.yid = 0;
       registry.needsUpdate = true;
       registry.clear();
 
