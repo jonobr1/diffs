@@ -254,10 +254,8 @@ export default function Results(props) {
 
       if (!object.processing || object.processing && index >= text.length) {
         object.processing = false;
-        if (text.length < groups.children.length) {
-          for (var j = text.length; j < groups.children.length; j++) {
-            groups.children[j].visible = false;
-          }
+        while (groups.children.length > text.length) {
+          groups.children[groups.children.length - 1].remove();
         }
         return;
       }
@@ -270,20 +268,9 @@ export default function Results(props) {
 
         if (!group) {
           group = new Group(word, 1, color);
-          groups.add(group);
         }
 
-        if (object.registry.contains(word)) {
-          object.registry.increment(word);
-          group.visible = false;
-          ref = object.registry.get(word);
-          ref.count++;
-          continue;
-        }
-
-        yid++;
-
-        if (group.parent !== groups) {
+        if (!group.parent || group.parent.id !== groups.id) {
           groups.add(group);
         }
 
@@ -293,7 +280,15 @@ export default function Results(props) {
         group.count = 1;
         group.visible = true;
 
-        object.registry.add(word, group);
+        if (object.registry.contains(word)) {
+          object.registry.increment(word);
+          group.visible = false;
+          ref = object.registry.get(word);
+          ref.count = object.registry.stats[word];
+        } else {
+          object.registry.add(word, group);
+          yid++;
+        }
 
       }
 
@@ -358,11 +353,10 @@ export default function Results(props) {
 
       }
 
+      object.mergeId = i;
+
       if (i >= size - 1) {
-        object.mergeId = 0;
         needsUpdate = false;
-      } else {
-        object.mergeId = i;
       }
 
       return needsUpdate;
@@ -411,8 +405,8 @@ export default function Results(props) {
         stage.add(registry.group);
       } else {
         // TODO: Turn into animation loop
-        for (var j = 0; j < registry.group.children.length; j++) {
-          registry.group.children[j].visible = false;
+        while (registry.group.children.length > 0) {
+          registry.group.children[registry.group.children.length - 1].remove();
         }
       }
       registry.needsUpdate = true;
