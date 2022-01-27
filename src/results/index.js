@@ -284,7 +284,7 @@ export default function Results(props) {
           object.registry.increment(word);
           group.visible = false;
           ref = object.registry.get(word);
-          ref.count = object.registry.stats[word];
+          ref.count = object.registry.get(word, 'stats');
         } else {
           object.registry.add(word, group);
           yid++;
@@ -335,14 +335,14 @@ export default function Results(props) {
         var ref;
         var group = object.registry.list[i];
         var word = group.word;
-        var count = object.registry.stats[word];
+        var count = object.registry.get(word, 'stats');
 
         if (registry.contains(word)) {
           group.visible = false;
           registry.increment(word, count);
-          if (registry.invocations[word] === 2) {
-            ref = registry.get(word);
-            ref.count = registry.stats[word];
+          ref = registry.get(word);
+          ref.count = registry.get(word, 'stats');
+          if (registry.get(word, 'invocations') === 2) {
             ref.color = registry.color;
             ref.position.y = registry.yid * (defaultStyles.leading * 1.15);
             registry.group.add(ref);
@@ -432,5 +432,5 @@ export default function Results(props) {
 }
 
 function isWord(str) {
-  return !!str;
+  return typeof str === 'string' && /\w/.test(str);
 }

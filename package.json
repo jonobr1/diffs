@@ -31,7 +31,8 @@
     "concurrently": "^6.4.0",
     "esbuild": "^0.14.3",
     "less": "^4.1.2",
-    "less-watch-compiler": "^1.16.3"
+    "less-watch-compiler": "^1.16.3",
+    "wink-porter2-stemmer": "^2.0.1"
   },
   "dependencies": {
     "matter-js": "^0.18.0",
