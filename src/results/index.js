@@ -193,7 +193,7 @@ export default function Results(props) {
     function update() {
 
       var { objects } = refs.current;
-      var i, obj;
+      var i, object;
 
       if (!objects) {
         return;
@@ -211,8 +211,8 @@ export default function Results(props) {
 
       for (i = 0; i < objects.length; i++) {
 
-        obj = objects[i];
-        layout(obj, objects.length);
+        object = objects[i];
+        layout(object, objects.length);
 
       }
 
@@ -228,11 +228,11 @@ export default function Results(props) {
 
       for (var i = 0; i < objects.length; i++) {
 
-        var obj = objects[i];
-        var a = obj.previousText === undefined;
-        var b = !obj.domElement;
+        var object = objects[i];
+        var a = object.previousText === undefined;
+        var b = !object.domElement;
 
-        if (a || b || obj.previousText !== obj.domElement.textContent) {
+        if (a || b || object.previousText !== object.domElement.textContent) {
           return true;
         }
 
@@ -242,12 +242,16 @@ export default function Results(props) {
 
     }
 
-    function layout(obj, total) {
+    function layout(object, total) {
 
-      var { index, domElement, groups, color } = obj;
+      var { index, domElement, groups, color, yid } = object;
       var text = domElement.textContent.toLowerCase().split(/\s+/i).filter(isWord);
       var limit = Math.min(index + MAX_ITERATIONS, text.length);
-      var yid = index;
+
+      if (!object.processing || object.processing && index >= text.length) {
+        object.processing = false;
+        return;
+      }
 
       for (var i = index; i < limit; i++) {
 
@@ -257,38 +261,35 @@ export default function Results(props) {
 
         if (!group) {
           group = new Group(word, 1, color);
-          groups.add(group.object);
-        } else {
-          group = group.reference;
+          groups.add(group);
         }
 
-        if (obj.registry.contains(word)) {
-          obj.registry.increment(word);
-          group.object.visible = false;
-          ref = obj.registry.get(word);
+        if (object.registry.contains(word)) {
+          object.registry.increment(word);
+          group.visible = false;
+          ref = object.registry.get(word);
           ref.count++;
           continue;
         }
 
         yid++;
 
-        obj.registry.add(word, group);
-
-        ref = registry.get(word);
-
-        if (group.object.parent !== groups) {
-          obj.groups.add(group.object);
+        if (group.parent !== groups) {
+          groups.add(group);
         }
 
         group.color = color;
-        group.object.position.y = yid * (defaultStyles.leading * 1.15);
+        group.position.y = yid * (defaultStyles.leading * 1.15);
         group.word = word;
         group.count = 1;
-        group.object.visible = true;
+        group.visible = true;
+
+        object.registry.add(word, group);
 
       }
 
-      obj.index = i;
+      object.index = i;
+      object.yid = yid;
 
     }
 
@@ -296,12 +297,15 @@ export default function Results(props) {
 
       var { objects } = refs.current;
       var needsUpdate = false;
-      var obj;
 
       for (var i = 0; i < objects.length; i++) {
-        obj = objects[i];
-        if (merge(obj)) {
+        var object = objects[i];
+        if (object.processing) {
           needsUpdate = true;
+        } else {
+          if (merge(object)) {
+            needsUpdate = true;
+          }
         }
       }
 
@@ -309,28 +313,29 @@ export default function Results(props) {
 
     }
 
-    function merge(obj) {
+    function merge(object) {
 
       var needsUpdate = true;
-      var { mergeId } = obj;
-      var size = obj.registry.size;
+      var { mergeId } = object;
+      var size = object.registry.size;
+      var limit = Math.min(mergeId + MAX_ITERATIONS, size);
 
-      for (var i = mergeId; i < Math.min(mergeId + MAX_ITERATIONS, size); i++) {
+      for (var i = mergeId; i < limit; i++) {
 
         var ref;
-        var group = obj.registry.list[i];
+        var group = object.registry.list[i];
         var word = group.word;
-        var count = obj.registry.stats[word];
+        var count = object.registry.stats[word];
 
         if (registry.contains(word)) {
-          group.object.visible = false;
+          group.visible = false;
           registry.increment(word, count);
           if (registry.invocations[word] === 2) {
             ref = registry.get(word);
             ref.count = registry.stats[word];
             ref.color = registry.color;
-            ref.object.position.x = 40;
-            registry.group.add(ref.object);
+            ref.position.x = 40;
+            registry.group.add(ref);
           }
         } else {
           registry.add(word, group);
@@ -339,10 +344,10 @@ export default function Results(props) {
       }
 
       if (i >= size - 1) {
-        obj.mergeId = 0;
+        object.mergeId = 0;
         needsUpdate = false;
       } else {
-        obj.mergeId = i;
+        object.mergeId = i;
       }
 
       return needsUpdate;
@@ -355,29 +360,31 @@ export default function Results(props) {
 
       for (var i = 0; i < objects.length; i++) {
 
-        var obj = objects[i];
+        var object = objects[i];
 
-        obj.index = 0;
-        obj.mergeId = 0;
+        object.yid = 0;
+        object.index = 0;
+        object.mergeId = 0;
+        object.processing = true;
 
-        if (!obj.domElement) {
-          var selector = `div.text div.column:nth-child(${obj.id + 1}) div.textarea`;
-          obj.domElement = document.querySelector(selector);
+        if (!object.domElement) {
+          var selector = `div.text div.column:nth-child(${object.id + 1}) div.textarea`;
+          object.domElement = document.querySelector(selector);
         }
 
-        obj.previousText = obj.domElement.textContent;
+        object.previousText = object.domElement.textContent;
 
-        if (obj.registry) {
-          obj.registry.clear();
+        if (object.registry) {
+          object.registry.clear();
         } else {
-          obj.registry = new Registry();
+          object.registry = new Registry();
         }
 
-        if (!obj.groups) {
-          obj.groups = new Two.Group;
-          obj.groups.position.y = 75;
-          obj.groups.position.x = (i + 1) * 250;
-          stage.add(obj.groups);
+        if (!object.groups) {
+          object.groups = new Two.Group;
+          object.groups.position.y = 75;
+          object.groups.position.x = (i + 1) * 250;
+          stage.add(object.groups);
         }
 
       }

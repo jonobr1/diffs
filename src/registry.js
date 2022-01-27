@@ -20,10 +20,10 @@ export default class {
     this.map[id] = object;
     if (typeof this.stats[id] === 'undefined') {
       this.list.push(object);
-      this.stats[id] = 1;
+      this.stats[id] = object.count || 1;
       this.invocations[id] = 1;
     } else {
-      this.stats[id]++;
+      this.stats[id] += object.count || 1;
       this.invocations[id]++;
     }
   }
