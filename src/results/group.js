@@ -3,8 +3,6 @@ import Easing from '../utils/easing.js';
 import { styles as defaultStyles } from '../utils/styles.js';
 import { palette } from '../utils/colors.js';
 
-var ID = 0;
-
 var styles = { ...defaultStyles,
   fill: palette.white,
   stroke: palette.none,
@@ -13,7 +11,6 @@ var styles = { ...defaultStyles,
 
 export default class Group extends Two.Group {
 
-  id = ID++;
   userData = {};
 
   constructor(word, count, color) {
