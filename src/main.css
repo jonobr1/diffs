@@ -88,7 +88,7 @@ div#react div.app div.text > div.column div.textarea {
   border-radius: 4px;
   margin-top: 6px;
   padding: 0 6px;
-  overflow: scroll;
+  overflow: auto;
 }
 div#react div.app div.text > div.column textarea p,
 div#react div.app div.text > div.column div.textarea p,
