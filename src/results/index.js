@@ -205,26 +205,30 @@ export default function Results(props) {
         legend.update();
       }
 
-      if (requiresUpdate(objects)) {
+      if (requiresReset(objects)) {
+
         reset();
-      }
 
-      for (i = 0; i < objects.length; i++) {
+      } else {
 
-        object = objects[i];
-        layout(object, objects.length);
+        for (i = 0; i < objects.length; i++) {
 
-      }
+          object = objects[i];
+          layout(object, objects.length);
 
-      if (registry.needsUpdate) {
-        reconcile();
+        }
+
+        if (registry.needsUpdate) {
+          reconcile();
+        }
+
       }
 
       refs.current.needsUpdate = false;
 
     }
 
-    function requiresUpdate(objects) {
+    function requiresReset(objects) {
 
       for (var i = 0; i < objects.length; i++) {
 
@@ -406,6 +410,7 @@ export default function Results(props) {
         registry.group.position.x = 40;
         stage.add(registry.group);
       } else {
+        // TODO: Turn into animation loop
         for (var j = 0; j < registry.group.children.length; j++) {
           registry.group.children[j].visible = false;
         }
