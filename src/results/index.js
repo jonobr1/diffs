@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import Two from 'two.js';
-import ZUI from 'two.js/extras/jsm/zui.js';
+import { ZUI } from 'two.js/extras/jsm/zui.js';
 import Legend from '../legend.js';
 import StatLine from './stat-line.js';
 import Registry from '../registry.js';
@@ -16,6 +16,7 @@ export default function Results(props) {
 
   useEffect(setup, []);
   useEffect(assign, [props.objects]);
+  useEffect(highlight, [props.keyword]);
 
   function setup() {
 
@@ -403,6 +404,11 @@ export default function Results(props) {
       refs.current.legend.update();
     }
 
+  }
+
+  function highlight() {
+    // TODO:
+    console.log(props.keyword);
   }
 
   return <div ref={ domElement } />;

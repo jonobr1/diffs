@@ -6,8 +6,6 @@ import { random } from './utils/colors.js';
 
 import "./main.css";
 
-// var MAX_ITERATIONS = 50;
-
 export default function App(props) {
 
   var domElement = useRef();
@@ -15,6 +13,7 @@ export default function App(props) {
   var [textIsVisible, setTextIsVisible] = useState(true);
   var [vizIsVisible, setVizIsVisible] = useState(true);
   var [highlightIsVisible, setHighlightIsVisible] = useState(false);
+  var [keyword, setKeyword] = useState('');
   var [texts, setTexts] = useState([{
     id: 0,
     name: '',
@@ -181,21 +180,58 @@ export default function App(props) {
 
     function highlight({ word, stem }) {
 
-      var elems = document.body.querySelectorAll('div.textarea');
-      var index = 0;
-      var regex = new RegExp(`(^|\\W)(${word})(\\W|$)`, 'ig');
-      var response = `$1<span class="highlight">${word}</span>$3`;
+      setKeyword(function(keyword) {
 
-      tick();
+        if (word === keyword) {
+          hide();
+          return '';
+        }
 
-      function tick() {
+        show();
+        return word;
 
-        var elem = elems[index];
+      });
 
-        if (elem) {
-          index++;
-          elem.innerHTML = elem.innerText.replace(regex, response);
-          requestAnimationFrame(tick);
+      function hide() {
+
+        var elems = document.body.querySelectorAll('div.textarea span.highlight');
+        var index = 0;
+
+        tick();
+
+        function tick() {
+
+          var elem = elems[index];
+
+          if (elem) {
+            index++;
+            elem.classList.remove('highlight');
+            requestAnimationFrame(tick);
+          }
+
+        }
+
+      }
+
+      function show() {
+
+        var elems = document.body.querySelectorAll('div.textarea');
+        var index = 0;
+        var regex = new RegExp(`(^|\\W)(${word})(\\W|$)`, 'ig');
+        var response = `$1<span class="highlight">${word}</span>$3`;
+
+        tick();
+
+        function tick() {
+
+          var elem = elems[index];
+
+          if (elem) {
+            index++;
+            elem.innerHTML = elem.innerText.replace(regex, response);
+            requestAnimationFrame(tick);
+          }
+
         }
 
       }
@@ -217,7 +253,7 @@ export default function App(props) {
     <div ref={ domElement } className="app">
 
       <div className={ ['view', 'visualization', vizIsVisible ? 'enabled' : ''].join(' ') }>
-        <Results objects={ texts } />
+        <Results objects={ texts } keyword={ keyword } />
       </div>
 
       <div className={ ['view', 'text', textIsVisible ? 'enabled' : '', highlightIsVisible ? 'highlighting' : ''].join(' ') }>
