@@ -9,17 +9,17 @@ var styles = { ...defaultStyles,
   padding: 25
 };
 
-export default class Group extends Two.Group {
+export default class StatLine extends Two.Group {
 
   userData = {};
 
-  constructor(word, count, color) {
+  constructor(keyword, count, color) {
 
     var shape, tally, text;
 
     super();
 
-    text = new Two.Text(word, 0, styles.size * 0.4, styles);
+    text = new Two.Text(keyword.word, 0, styles.size * 0.4, styles);
     tally = new Two.Text(count, 0, styles.size * 0.25, styles);
     shape = new Two.RoundedRectangle(0, 0, 0, styles.leading, styles.leading * 0.5);
     shape.color = color;
@@ -32,7 +32,7 @@ export default class Group extends Two.Group {
     this.add(shape, tally, text);
 
     this.userData = {
-      shape, tally, text
+      shape, tally, text, keyword
     };
 
     this.update();
@@ -45,7 +45,7 @@ export default class Group extends Two.Group {
     var word = text.value;
     var count = tally.value;
 
-    var chars = word.length + count.toString().length;
+    var chars = (word.length + 1) + count.toString().length;
     var width = chars * styles.characterWidth;
 
     text.position.x = 0;
@@ -57,11 +57,12 @@ export default class Group extends Two.Group {
 
   //
 
-  get word() {
-    return this.userData.text.value;
+  get keyword() {
+    return this.userData.keyword;
   }
-  set word(v) {
-    this.userData.text.value = v;
+  set keyword(v) {
+    this.userData.keyword = v;
+    this.userData.text.value = v.word;
     this.update();
   }
 

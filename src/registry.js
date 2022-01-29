@@ -1,5 +1,4 @@
 import Two from 'two.js';
-import stem from 'wink-porter2-stemmer';
 
 export default class {
 
@@ -13,23 +12,18 @@ export default class {
 
   constructor() {}
 
-  get(key) {
+  get(id) {
     var prop;
-    var id = stem(key);
-
     if (arguments.length > 1) {
       prop = arguments[1]
     }
     if (typeof prop !== 'string' && !(prop in this)) {
       prop = 'map';
     }
-
     return this[prop][id] || null;
-
   }
 
-  add(key, object) {
-    var id = stem(key);
+  add(id, object) {
     this.map[id] = object;
     if (typeof this.stats[id] === 'undefined') {
       this.list.push(object);
@@ -41,8 +35,7 @@ export default class {
     }
   }
 
-  remove(key) {
-    var id = stem(key);
+  remove(id) {
     var object = this.map[id];
     // TODO: Remove object from list
     delete this.map[id];
@@ -51,8 +44,7 @@ export default class {
     return object;
   }
 
-  increment(key, amt) {
-    var id = stem(key);
+  increment(id, amt) {
     if (typeof this.stats[id] !== 'number') {
       console.warn(`Registry.increment: stats['${id}'] is not a number.`);
     } else if (typeof amt === 'number') {
@@ -64,8 +56,7 @@ export default class {
     }
   }
 
-  contains(key) {
-    var id = stem(key);
+  contains(id) {
     return id in this.map;
   }
 

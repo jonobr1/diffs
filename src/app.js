@@ -1,8 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Results from './results/index.js';
+import Keyword from './keyword.js';
+import debounce from './utils/debounce.js';
 import { random } from './utils/colors.js';
 
 import "./main.css";
+
+// var MAX_ITERATIONS = 50;
 
 export default function App(props) {
 
@@ -11,16 +15,30 @@ export default function App(props) {
   var [textIsVisible, setTextIsVisible] = useState(true);
   var [vizIsVisible, setVizIsVisible] = useState(true);
   var [highlightIsVisible, setHighlightIsVisible] = useState(false);
-  var [texts, setTexts] = useState([{ id: 0, name: '', index: 0, color: random(0, 0.5) }]);
+  var [texts, setTexts] = useState([{
+    id: 0,
+    name: '',
+    index: 0,
+    color: random(0, 0.5),
+    innerText: '',
+    keywords: []
+  }]);
 
   function increase() {
     var result = texts.slice(0);
-    result.push({ id: result.length, index: 0, color: random(0, 0.5) });
+    result.push({
+      id: result.length,
+      name: '',
+      index: 0,
+      color: random(0, 0.5),
+      innerText: '',
+      keywords: []
+    });
     setTexts(result);
     focus();
   }
 
-  function reduce() {
+  function decrease() {
     var result = texts.slice(0);
     result.pop();
     setTexts(result);
@@ -79,6 +97,7 @@ export default function App(props) {
           className="textarea"
           contentEditable={ !highlightIsVisible }
           onClick={ click }
+          onKeyUp={ debounce(keyup, 500) }
           onPaste={ paste } />
       </div>
     );
@@ -91,6 +110,22 @@ export default function App(props) {
       if (typeof selection.anchorOffset === 'number' && selection.anchorOffset === selection.focusOffset) {
         highlightAt(selection.anchorNode);
       }
+    }
+
+    function keyup(e) {
+      var text = e.target.innerText;
+      setTexts(function(texts) {
+        var result = [ ...texts ];
+        var obj = result[i];
+        if (obj.innerText !== text) {
+          obj.innerText = text;
+          obj.keywords = text.toLowerCase()
+            .split(/\s+/i)
+            .filter(isWord)
+            .map(createKeyword);
+        }
+        return result;
+      });
     }
 
     function paste(e) {
@@ -135,19 +170,20 @@ export default function App(props) {
         }
       }
 
-      highlight(text.slice(start, end).replace(/\.\,/ig, '').trim());
+      var word = text.slice(start, end);
+
+      if (word) {
+        var keyword = new Keyword(word);
+        highlight(keyword);
+      }
 
     }
 
-    function highlight(word) {
-
-      if (!word) {
-        return;
-      }
+    function highlight({ word, stem }) {
 
       var elems = document.body.querySelectorAll('div.textarea');
       var index = 0;
-      var regex = new RegExp(`(^|\\s)(${word})(\\s|$)`, 'ig');
+      var regex = new RegExp(`(^|\\W)(${word})(\\W|$)`, 'ig');
       var response = `$1<span class="highlight">${word}</span>$3`;
 
       tick();
@@ -158,7 +194,7 @@ export default function App(props) {
 
         if (elem) {
           index++;
-          elem.innerHTML = elem.textContent.replace(regex, response);
+          elem.innerHTML = elem.innerText.replace(regex, response);
           requestAnimationFrame(tick);
         }
 
@@ -192,7 +228,7 @@ export default function App(props) {
         <button onClick={ increase }>
           Add Text Field
         </button>
-        <button onClick={ reduce }>
+        <button onClick={ decrease }>
           Remove Text Field
         </button>
         <span>
@@ -215,4 +251,12 @@ export default function App(props) {
     </div>
   );
 
+}
+
+function isWord(str) {
+  return typeof str === 'string' && /\w/.test(str);
+}
+
+function createKeyword(word, i) {
+  return new Keyword(word);
 }

@@ -2,16 +2,16 @@ import React, { useEffect, useRef } from 'react';
 import Two from 'two.js';
 import ZUI from 'two.js/extras/jsm/zui.js';
 import Legend from '../legend.js';
-import Group from './group.js';
+import StatLine from './stat-line.js';
 import Registry from '../registry.js';
 import { random } from '../utils/colors.js';
 import { styles as defaultStyles } from '../utils/styles.js';
 
-var MAX_ITERATIONS = 50;
+var MAX_ITERATIONS = 1;
 
 export default function Results(props) {
 
-  var refs = useRef();
+  var refs = useRef({});
   var domElement = useRef();
 
   useEffect(setup, []);
@@ -39,12 +39,11 @@ export default function Results(props) {
 
     resize();
 
-    refs.current = {
-      two,
-      legend,
-      registry,
-      stage
-    };
+    refs.current.two = two;
+    refs.current.legend = legend;
+    refs.current.registry = registry;
+    refs.current.stage = stage;
+    refs.current.needsUpdate = false;
 
     return unmount;
 
@@ -192,7 +191,7 @@ export default function Results(props) {
 
     function update() {
 
-      var { objects } = refs.current;
+      var { objects, needsUpdate } = refs.current;
       var i, object;
 
       if (!objects) {
@@ -205,7 +204,7 @@ export default function Results(props) {
         legend.update();
       }
 
-      if (requiresReset(objects)) {
+      if (needsUpdate) {
 
         reset();
 
@@ -228,34 +227,15 @@ export default function Results(props) {
 
     }
 
-    function requiresReset(objects) {
-
-      for (var i = 0; i < objects.length; i++) {
-
-        var object = objects[i];
-        var a = object.previousText === undefined;
-        var b = !object.domElement;
-
-        if (a || b || object.previousText !== object.domElement.innerText) {
-          return true;
-        }
-
-      }
-
-      return false
-
-    }
-
     function layout(object, total) {
 
-      var { index, domElement, groups, color, yid } = object;
-      var text = domElement.innerText.toLowerCase().split(/\s+/i).filter(isWord);
-      var limit = Math.min(index + MAX_ITERATIONS, text.length);
+      var { index, keywords, group, color, yid } = object;
+      var limit = Math.min(index + MAX_ITERATIONS, keywords.length);
 
-      if (!object.processing || object.processing && index >= text.length) {
+      if (!object.processing || object.processing && index >= keywords.length) {
         object.processing = false;
-        while (groups.children.length > text.length) {
-          groups.children[groups.children.length - 1].remove();
+        while (group.children.length > keywords.length) {
+          group.children[group.children.length - 1].remove();
         }
         return;
       }
@@ -263,30 +243,31 @@ export default function Results(props) {
       for (var i = index; i < limit; i++) {
 
         var ref;
-        var word = text[i].trim().replace(/\W/ig, '');
-        var group = groups.children[i];
+        var keyword = keywords[i];
+        var { word, stem } = keyword;
+        var child = group.children[i];
 
-        if (!group) {
-          group = new Group(word, 1, color);
+        if (!child) {
+          child = new StatLine(keyword, 1, color);
         }
 
-        if (!group.parent || group.parent.id !== groups.id) {
-          groups.add(group);
+        if (!child.parent || child.parent.id !== group.id) {
+          group.add(child);
         }
 
-        group.color = color;
-        group.position.y = yid * (defaultStyles.leading * 1.15);
-        group.word = word;
-        group.count = 1;
-        group.visible = true;
+        child.color = color;
+        child.position.y = yid * (defaultStyles.leading * 1.15);
+        child.keyword = keyword;
+        child.count = 1;
+        child.visible = true;
 
-        if (object.registry.contains(word)) {
-          object.registry.increment(word);
-          group.visible = false;
-          ref = object.registry.get(word);
-          ref.count = object.registry.get(word, 'stats');
+        if (object.registry.contains(stem)) {
+          object.registry.increment(stem);
+          child.visible = false;
+          ref = object.registry.get(stem);
+          ref.count = object.registry.get(stem, 'stats');
         } else {
-          object.registry.add(word, group);
+          object.registry.add(stem, child);
           yid++;
         }
 
@@ -334,22 +315,22 @@ export default function Results(props) {
 
         var ref;
         var group = object.registry.list[i];
-        var word = group.word;
-        var count = object.registry.get(word, 'stats');
+        var { word, stem } = group.keyword;
+        var count = object.registry.get(stem, 'stats');
 
-        if (registry.contains(word)) {
+        if (registry.contains(stem)) {
           group.visible = false;
-          registry.increment(word, count);
-          ref = registry.get(word);
-          ref.count = registry.get(word, 'stats');
-          if (registry.get(word, 'invocations') === 2) {
+          registry.increment(stem, count);
+          ref = registry.get(stem);
+          ref.count = registry.get(stem, 'stats');
+          if (registry.get(stem, 'invocations') === 2) {
             ref.color = registry.color;
             ref.position.y = registry.yid * (defaultStyles.leading * 1.15);
             registry.group.add(ref);
             registry.yid++;
           }
         } else {
-          registry.add(word, group);
+          registry.add(stem, group);
         }
 
       }
@@ -377,24 +358,17 @@ export default function Results(props) {
         object.mergeId = 0;
         object.processing = true;
 
-        if (!object.domElement) {
-          var selector = `div.text div.column:nth-child(${object.id + 1}) div.textarea`;
-          object.domElement = document.querySelector(selector);
-        }
-
-        object.previousText = object.domElement.innerText;
-
         if (object.registry) {
           object.registry.clear();
         } else {
           object.registry = new Registry();
         }
 
-        if (!object.groups) {
-          object.groups = new Two.Group;
-          object.groups.position.y = 100;
-          object.groups.position.x = (i + 1) * 250;
-          stage.add(object.groups);
+        if (!object.group) {
+          object.group = new Two.Group();
+          object.group.position.y = 100;
+          object.group.position.x = (i + 1) * 250;
+          stage.add(object.group);
         }
 
       }
@@ -416,10 +390,14 @@ export default function Results(props) {
 
     }
 
+    refs.current.needsUpdate = false;
+
   }
 
   function assign() {
+
     refs.current.objects = props.objects;
+    refs.current.needsUpdate = true;
 
     if (refs.current.legend) {
       refs.current.legend.update();

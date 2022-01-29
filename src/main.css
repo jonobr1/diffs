@@ -54,6 +54,7 @@ div#react div.app div.text {
   display: flex;
   justify-content: flex-start;
   flex-wrap: nowrap;
+  overflow-x: auto;
   top: 48px;
   left: 0;
   width: 100%;
@@ -62,6 +63,7 @@ div#react div.app div.text {
 div#react div.app div.text > div.column {
   display: inline-block;
   padding: 0 8px 8px;
+  min-width: 400px;
   box-sizing: border-box;
   flex-grow: 1;
   overflow: hidden;
