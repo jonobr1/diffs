@@ -6,7 +6,7 @@ import { palette } from '../utils/colors.js';
 var styles = { ...defaultStyles,
   fill: palette.white,
   stroke: palette.none,
-  padding: 25
+  padding: defaultStyles.leading
 };
 
 export default class StatLine extends Two.Group {
@@ -19,7 +19,7 @@ export default class StatLine extends Two.Group {
 
     super();
 
-    text = new Two.Text(keyword.word, 0, styles.size * 0.4, styles);
+    text = new Two.Text(keyword.word, 0, styles.size * 0.33, styles);
     tally = new Two.Text(count, 0, styles.size * 0.25, styles);
     shape = new Two.RoundedRectangle(0, 0, 0, styles.leading, styles.leading * 0.5);
     shape.color = color;
@@ -41,12 +41,14 @@ export default class StatLine extends Two.Group {
 
   update() {
 
-    var { shape, tally, text } = this.userData;
+    var { keyword, shape, tally, text } = this.userData;
     var word = text.value;
     var count = tally.value;
 
     var chars = (word.length + 1) + count.toString().length;
     var width = chars * styles.characterWidth;
+
+    this.className = keyword.stem;
 
     text.position.x = 0;
     tally.position.x = width;
