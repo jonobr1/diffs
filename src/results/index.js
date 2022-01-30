@@ -407,8 +407,28 @@ export default function Results(props) {
   }
 
   function highlight() {
-    // TODO:
-    console.log(props.keyword);
+
+    var children, child;
+    var { stage } = refs.current;
+
+    children = stage.getByClassName('highlight');
+
+    for (var i = 0; i < children.length; i++) {
+      child = children[i];
+      child.isHighlighted = false;
+    }
+
+    if (props.keyword) {
+
+      children = stage.getByClassName(props.keyword);
+
+      for (var j = 0; j < children.length; j++) {
+        child = children[j];
+        child.isHighlighted = true;
+      }
+
+    }
+
   }
 
   return <div ref={ domElement } />;

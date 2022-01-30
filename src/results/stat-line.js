@@ -24,6 +24,7 @@ export default class StatLine extends Two.Group {
     shape = new Two.RoundedRectangle(0, 0, 0, styles.leading, styles.leading * 0.5);
     shape.color = color;
     shape.stroke = 'none';
+    shape.linewidth = styles.size * 0.25;
 
     text.alignment = 'left';
     tally.alignment = 'right';
@@ -48,12 +49,21 @@ export default class StatLine extends Two.Group {
     var chars = (word.length + 1) + count.toString().length;
     var width = chars * styles.characterWidth;
 
-    this.className = keyword.stem;
+    if (this.className.indexOf(keyword.stem) < 0) {
+      this.className = keyword.stem;
+    }
 
     text.position.x = 0;
     tally.position.x = width;
     shape.position.x = width / 2;
     shape.width = width + styles.padding;
+
+    if (keyword.isHighlighted) {
+      shape.stroke = 'yellow';
+      this.className += ' highlight';
+    } else {
+      shape.stroke = 'none';
+    }
 
   }
 
@@ -81,6 +91,14 @@ export default class StatLine extends Two.Group {
   }
   set color(v) {
     this.userData.shape.fill = v;
+  }
+
+  get isHighlighted() {
+    return this.userData.keyword.isHighlighted;
+  }
+  set isHighlighted(v) {
+    this.userData.keyword.isHighlighted = v;
+    this.update();
   }
 
 }

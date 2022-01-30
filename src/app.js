@@ -188,7 +188,7 @@ export default function App(props) {
         }
 
         show();
-        return word;
+        return stem;
 
       });
 
