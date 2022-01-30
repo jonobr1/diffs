@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import Two from 'two.js';
+import TWEEN from '@tweenjs/tween.js';
 import { ZUI } from 'two.js/extras/jsm/zui.js';
 import Legend from '../legend.js';
 import StatLine from './stat-line.js';
@@ -33,6 +34,8 @@ export default function Results(props) {
     var registry = new Registry();
     registry.color = random(0, 0.5);
 
+    var zui = new ZUI(stage);
+
     addZUI();
 
     two.bind('update', update)
@@ -44,6 +47,7 @@ export default function Results(props) {
     refs.current.legend = legend;
     refs.current.registry = registry;
     refs.current.stage = stage;
+    refs.current.zui = zui;
     refs.current.needsUpdate = false;
 
     return unmount;
@@ -74,7 +78,6 @@ export default function Results(props) {
     function addZUI() {
 
       var domElement = two.renderer.domElement;
-      var zui = new ZUI(stage);
       var mouse = new Two.Vector();
       var touches = {};
       var distance = 0;
@@ -191,6 +194,8 @@ export default function Results(props) {
     }
 
     function update() {
+
+      TWEEN.update();
 
       var { objects, needsUpdate } = refs.current;
       var i, object;
@@ -408,8 +413,10 @@ export default function Results(props) {
 
   function highlight() {
 
-    var children, child;
-    var { stage } = refs.current;
+    var children, child, current;
+    var { two, stage, zui } = refs.current;
+
+    refs.current.target = null;
 
     children = stage.getByClassName('highlight');
 
@@ -423,8 +430,43 @@ export default function Results(props) {
       children = stage.getByClassName(props.keyword);
 
       for (var j = 0; j < children.length; j++) {
+
         child = children[j];
-        child.isHighlighted = true;
+
+        if (child.visible) {
+          child.isHighlighted = true;
+          current = child;
+        }
+
+      }
+
+      if (current) {
+
+        var am = zui.surfaceMatrix;
+        var bm = current.parent.matrix
+          .multiply(current.position.x, current.position.y, 1);
+
+        var v = new Two.Vector().set(
+          am.elements[2],
+          am.elements[5]
+        );
+        var dest = {
+          x: two.width * 0.5 - bm.x * am.elements[0],
+          y: two.height * 0.5 - bm.y * am.elements[0]
+        };
+
+        var tween = new TWEEN.Tween(v)
+          .to(dest, 350)
+          .easing(TWEEN.Easing.Sinusoidal.Out)
+          .onUpdate(function() {
+
+            am.elements[2] = v.x;
+            am.elements[5] = v.y;
+            zui.updateSurface();
+
+          })
+          .start();
+
       }
 
     }
