@@ -253,7 +253,7 @@ export default function App(props) {
     <div ref={ domElement } className="app">
 
       <div className={ ['view', 'visualization', vizIsVisible ? 'enabled' : ''].join(' ') }>
-        <Results objects={ texts } keyword={ keyword } />
+        <Results objects={ texts } keyword={ highlightIsVisible && keyword } />
       </div>
 
       <div className={ ['view', 'text', textIsVisible ? 'enabled' : '', highlightIsVisible ? 'highlighting' : ''].join(' ') }>
