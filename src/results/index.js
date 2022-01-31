@@ -3,6 +3,7 @@ import Two from 'two.js';
 import TWEEN from '@tweenjs/tween.js';
 import { ZUI } from 'two.js/extras/jsm/zui.js';
 import Legend from '../legend.js';
+import GraphLine from './graph-line.js';
 import StatLine from './stat-line.js';
 import Registry from '../registry.js';
 import { random } from '../utils/colors.js';
@@ -26,7 +27,8 @@ export default function Results(props) {
       autostart: true
     }).appendTo(domElement.current);
 
-    var stage = two.makeGroup();
+    var grid = new Two.Group();
+    var stage = two.makeGroup(grid);
     var legend = new Legend();
 
     two.add(legend.group);
@@ -235,7 +237,7 @@ export default function Results(props) {
 
     function layout(object, total) {
 
-      var { index, keywords, group, color, yid } = object;
+      var { index, keywords, group, grid, color, yid } = object;
       var limit = Math.min(index + MAX_ITERATIONS, keywords.length);
 
       if (!object.processing || object.processing && index >= keywords.length) {
@@ -267,6 +269,8 @@ export default function Results(props) {
         child.count = 1;
         child.visible = true;
 
+        grid.addPoint(child.position.clone());
+
         if (object.registry.contains(stem)) {
           object.registry.increment(stem);
           child.visible = false;
@@ -281,6 +285,8 @@ export default function Results(props) {
 
       object.index = i;
       object.yid = yid;
+
+      grid.bottom = child.position.y;
 
     }
 
@@ -375,6 +381,15 @@ export default function Results(props) {
           object.group.position.y = 100;
           object.group.position.x = (i + 1) * 250;
           stage.add(object.group);
+        }
+
+        if (!object.grid) {
+          object.grid = new GraphLine();
+          object.grid.position.y = 100;
+          object.grid.position.x = (i + 1) * 250;
+          grid.add(object.grid);
+        } else {
+          object.grid.reset();
         }
 
       }

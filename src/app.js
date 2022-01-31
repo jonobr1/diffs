@@ -28,7 +28,7 @@ export default function App(props) {
   var [texts, setTexts] = useState(emptyState);
 
   useEffect(setup, []);
-  useEffect(store, [texts])
+  useEffect(debounce(store, 1000), [texts])
 
   function setup() {
     var state = localStorage.getItem('state');
