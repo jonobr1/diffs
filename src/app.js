@@ -317,9 +317,6 @@ export default function App(props) {
       </div>
 
       <div className="menu">
-        <button onClick={ clear }>
-          New
-        </button>
         <button onClick={ increase }>
           Add Text Field
         </button>
@@ -338,6 +335,9 @@ export default function App(props) {
           <input id="highlight-visibility" type="checkbox" defaultChecked={ highlightIsVisible } onChange={ toggleHighlights } />
           <label htmlFor="highlight-visibility">Highlight Mode</label>
         </span>
+        <button onClick={ clear }>
+          Clear Session
+        </button>
         <button onClick={ save }>
           Save Image
         </button>
