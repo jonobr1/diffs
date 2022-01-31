@@ -10,4 +10,4 @@ A collection of components to visually compare texts
 [ ] Add graph lines to better resolve hierarchy of visualization
 [ ] Turn global actions / navigation up top to a Figma style layers
 [ ] Filter out non-words from visualization (or focus on types of words? E.g: verbs)
-[ ] Save state of application to localStorage
+[x] Save state of application to localStorage

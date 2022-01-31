@@ -6,22 +6,78 @@ import { random } from './utils/colors.js';
 
 import "./main.css";
 
+var emptyState = [
+  {
+    id: 0,
+    name: 'Text 1',
+    color: random(0, 0.5),
+    innerText: '',
+    keywords: []
+  }
+];
+
 export default function App(props) {
 
+  var refs = useRef({});
   var domElement = useRef();
 
   var [textIsVisible, setTextIsVisible] = useState(true);
   var [vizIsVisible, setVizIsVisible] = useState(true);
   var [highlightIsVisible, setHighlightIsVisible] = useState(false);
   var [keyword, setKeyword] = useState('');
-  var [texts, setTexts] = useState([{
-    id: 0,
-    name: '',
-    index: 0,
-    color: random(0, 0.5),
-    innerText: '',
-    keywords: []
-  }]);
+  var [texts, setTexts] = useState(emptyState);
+
+  useEffect(setup, []);
+  useEffect(store, [texts])
+
+  function setup() {
+    var state = localStorage.getItem('state');
+    if (state) {
+      state = JSON.parse(state).map(function(text) {
+        requestAnimationFrame(function() {
+          var selector;
+          selector = `#ta-${text.id}`;
+          document.querySelector(selector).innerText = text.innerText;
+          selector = `#ti-${text.id}`;
+          document.querySelector(selector).value = text.name;
+        });
+        text.keywords = text.innerText.toLowerCase()
+          .split(/\s+/i)
+          .filter(isWord)
+          .map(createKeyword);
+        return text;
+      });
+      setTexts(state);
+    }
+    refs.current.mounted = true;
+  }
+
+  function store() {
+    if (refs.current && refs.current.mounted) {
+      var state = texts.map(function(text) {
+        return {
+          id: text.id,
+          name: text.name,
+          color: text.color,
+          innerText: text.innerText
+        };
+      });
+      localStorage.setItem('state', JSON.stringify(state));
+    }
+  }
+
+  function clear() {
+    if (confirm('This will delete your current session. Are you sure you want to continue?')) {
+      localStorage.clear();
+      document.querySelectorAll('input.title').forEach(function(elem) {
+        elem.value = emptyState[0].name;
+      });
+      document.querySelectorAll('div.textarea').forEach(function(elem) {
+        elem.innerText = emptyState[0].innerText;
+      });
+      setTexts(emptyState);
+    }
+  }
 
   function increase() {
     var result = texts.slice(0);
@@ -89,7 +145,7 @@ export default function App(props) {
 
     return (
       <div key={ i } className="column" style={ ds }>
-        <input type="text" name="title" defaultValue={ `Text ${i + 1}` } onChange={ update } />
+        <input id={ `ti-${i}` } type="text" className="title" defaultValue={ `Text ${i + 1}` } onChange={ update } />
         <div
           id={ `ta-${i}` }
           tab={ i }
@@ -261,6 +317,9 @@ export default function App(props) {
       </div>
 
       <div className="menu">
+        <button onClick={ clear }>
+          New
+        </button>
         <button onClick={ increase }>
           Add Text Field
         </button>
