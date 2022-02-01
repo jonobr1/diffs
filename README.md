@@ -11,3 +11,4 @@ A collection of components to visually compare texts
 [ ] Turn global actions / navigation up top to a Figma style layers
 [ ] Filter out non-words from visualization (or focus on types of words? E.g: verbs)
 [x] Save state of application to localStorage
+[ ] Sort by frequency, alphabetic, etc.
