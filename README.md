@@ -12,4 +12,4 @@ A collection of components to visually compare texts
 [ ] Filter out non-words from visualization (or focus on types of words? E.g: verbs)
 [x] Save state of application to localStorage
 [x] Sort by frequency, alphabetic, etc.
-[ ] Add a loading gif to the visualization when processing
+[x] Add a loading gif to the visualization when processing
