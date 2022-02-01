@@ -234,66 +234,6 @@ export default function App(props) {
 
     }
 
-    function highlight({ word, stem }) {
-
-      setKeyword(function(keyword) {
-
-        if (word === keyword) {
-          hide();
-          return '';
-        }
-
-        show();
-        return stem;
-
-      });
-
-      function hide() {
-
-        var elems = document.body.querySelectorAll('div.textarea span.highlight');
-        var index = 0;
-
-        tick();
-
-        function tick() {
-
-          var elem = elems[index];
-
-          if (elem) {
-            index++;
-            elem.classList.remove('highlight');
-            requestAnimationFrame(tick);
-          }
-
-        }
-
-      }
-
-      function show() {
-
-        var elems = document.body.querySelectorAll('div.textarea');
-        var index = 0;
-        var regex = new RegExp(`(^|\\W)(${word})(\\W|$)`, 'ig');
-        var response = `$1<span class="highlight">${word}</span>$3`;
-
-        tick();
-
-        function tick() {
-
-          var elem = elems[index];
-
-          if (elem) {
-            index++;
-            elem.innerHTML = elem.innerText.replace(regex, response);
-            requestAnimationFrame(tick);
-          }
-
-        }
-
-      }
-
-    }
-
     function update(e) {
       var value = e.target.value;
       setTexts(function(texts) {
@@ -305,11 +245,71 @@ export default function App(props) {
 
   }
 
+  function highlight({ word, stem }) {
+
+    setKeyword(function(keyword) {
+
+      if (word === keyword) {
+        hide();
+        return '';
+      }
+
+      show();
+      return stem;
+
+    });
+
+    function hide() {
+
+      var elems = document.body.querySelectorAll('div.textarea span.highlight');
+      var index = 0;
+
+      tick();
+
+      function tick() {
+
+        var elem = elems[index];
+
+        if (elem) {
+          index++;
+          elem.classList.remove('highlight');
+          requestAnimationFrame(tick);
+        }
+
+      }
+
+    }
+
+    function show() {
+
+      var elems = document.body.querySelectorAll('div.textarea');
+      var index = 0;
+      var regex = new RegExp(`(^|\\W)(${word})(\\W|$)`, 'ig');
+      var response = `$1<span class="highlight">${word}</span>$3`;
+
+      tick();
+
+      function tick() {
+
+        var elem = elems[index];
+
+        if (elem) {
+          index++;
+          elem.innerHTML = elem.innerText.replace(regex, response);
+          requestAnimationFrame(tick);
+        }
+
+      }
+
+    }
+
+  }
+
   return (
-    <div ref={ domElement } className="app">
+    <div ref={ domElement } className={ ['app', highlightIsVisible ? 'highlighting' : ''].join(' ') }>
 
       <div className={ ['view', 'visualization', vizIsVisible ? 'enabled' : ''].join(' ') }>
-        <Results objects={ texts } keyword={ highlightIsVisible && keyword } />
+        <Results objects={ texts } keyword={ highlightIsVisible && keyword } isHighlighted={ highlightIsVisible } onSelect={ (stem) => highlight({ word: stem, stem }) } />
       </div>
 
       <div className={ ['view', 'text', textIsVisible ? 'enabled' : '', highlightIsVisible ? 'highlighting' : ''].join(' ') }>

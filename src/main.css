@@ -36,10 +36,13 @@ div#react div.app div.view.enabled {
   opacity: 1;
   pointer-events: auto;
 }
-div#react div.app div.view.highlighting div.textarea {
+div#react div.app.highlighting div.visualization g {
   cursor: pointer;
 }
-div#react div.app div.view.highlighting div.textarea span.highlight {
+div#react div.app.highlighting div.view div.textarea {
+  cursor: pointer;
+}
+div#react div.app.highlighting div.view div.textarea span.highlight {
   background: yellow;
   border-radius: 4px;
 }

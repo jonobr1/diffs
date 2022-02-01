@@ -19,6 +19,7 @@ export default function Results(props) {
   useEffect(setup, []);
   useEffect(assign, [props.objects]);
   useEffect(highlight, [props.keyword]);
+  useEffect(toggle, [props.isHighlighted]);
 
   function setup() {
 
@@ -50,6 +51,15 @@ export default function Results(props) {
     refs.current.registry = registry;
     refs.current.stage = stage;
     refs.current.zui = zui;
+    refs.current.click = function(e) {
+      var elem = e.target;
+      var parent = elem.parentNode;
+      var stem = parent.getAttribute('class')
+        .replace(/(sl|highlight)/ig, '').trim();
+      if (props.onSelect) {
+        props.onSelect(stem);
+      }
+    };
     refs.current.needsUpdate = false;
 
     return unmount;
@@ -484,6 +494,21 @@ export default function Results(props) {
 
       }
 
+    }
+
+  }
+
+  function toggle() {
+
+    var elems = document.querySelectorAll('svg g.sl');
+
+    for (var i = 0; i < elems.length; i++) {
+      var elem = elems[i];
+      if (props.isHighlighted) {
+        elem.addEventListener('click', refs.current.click, false);
+      } else {
+        elem.removeEventListener('click', refs.current.click, false);
+      }
     }
 
   }

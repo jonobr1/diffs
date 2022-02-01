@@ -50,7 +50,7 @@ export default class StatLine extends Two.Group {
     var width = chars * styles.characterWidth;
 
     if (this.className.indexOf(keyword.stem) < 0) {
-      this.className = keyword.stem;
+      this.className = `sl ${keyword.stem}`;
     }
 
     text.position.x = 0;
