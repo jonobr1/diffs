@@ -49,9 +49,8 @@ export default class StatLine extends Two.Group {
     var chars = (word.length + 1) + count.toString().length;
     var width = chars * styles.characterWidth;
 
-    if (this.className.indexOf(keyword.stem) < 0) {
-      this.className = `sl ${keyword.stem}`;
-    }
+
+    this.className = `sl ${keyword.stem}`;
 
     text.position.x = 0;
     tally.position.x = width;
@@ -97,7 +96,7 @@ export default class StatLine extends Two.Group {
     return this.userData.keyword.isHighlighted;
   }
   set isHighlighted(v) {
-    this.userData.keyword.isHighlighted = v;
+    this.userData.keyword.isHighlighted = !!v;
     this.update();
   }
 

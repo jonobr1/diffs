@@ -273,6 +273,7 @@ export default function Results(props) {
           group.add(child);
         }
 
+        child.isHighlighted = keyword.stem === refs.current.keyword.stem;
         child.color = color;
         child.position.y = yid++ * (defaultStyles.leading * 1.15);
         child.keyword = keyword;
@@ -440,7 +441,7 @@ export default function Results(props) {
     var children, child, current;
     var { two, stage, zui } = refs.current;
 
-    refs.current.target = null;
+    refs.current.keyword = props.keyword;
 
     children = stage.getByClassName('highlight');
 
