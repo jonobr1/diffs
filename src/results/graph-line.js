@@ -6,7 +6,7 @@ export default class GraphLine extends Two.Group {
 
   constructor() {
 
-    var line, points;
+    var line, points, highlights;
 
     super();
 
@@ -18,10 +18,15 @@ export default class GraphLine extends Two.Group {
     points.fill = '#777';
     points.stroke = 'none';
 
-    this.add(line, points);
+    highlights = new Two.Points();
+    highlights.size = 12;
+    highlights.fill = 'yellow';
+    highlights.stroke = 'none';
+
+    this.add(line, highlights, points);
 
     this.userData = {
-      line, points
+      line, highlights, points
     };
 
   }
@@ -29,6 +34,18 @@ export default class GraphLine extends Two.Group {
   addPoint(v) {
     if (this.userData.points) {
       this.userData.points.vertices.push(v);
+    }
+  }
+
+  addHighlight(v) {
+    if (this.userData.highlights) {
+      this.userData.highlights.vertices.push(v);
+    }
+  }
+
+  clearHighlights() {
+    if (this.userData.highlights) {
+      this.userData.highlights.vertices = [];
     }
   }
 

@@ -284,8 +284,8 @@ export default function App(props) {
 
       var elems = document.body.querySelectorAll('div.textarea');
       var index = 0;
-      var regex = new RegExp(`(^|\\W)(${word})(\\W|$)`, 'ig');
-      var response = `$1<span class="highlight">${word}</span>$3`;
+      var regex = new RegExp(`([^|\\W]?)(${word})([\\W|$]?)`, 'ig');
+      var response = `$1<span class="highlight">$2</span>$3`;
 
       tick();
 

@@ -274,7 +274,7 @@ export default function Results(props) {
         }
 
         child.color = color;
-        child.position.y = yid * (defaultStyles.leading * 1.15);
+        child.position.y = yid++ * (defaultStyles.leading * 1.15);
         child.keyword = keyword;
         child.count = 1;
         child.visible = true;
@@ -288,7 +288,6 @@ export default function Results(props) {
           ref.count = object.registry.get(stem, 'stats');
         } else {
           object.registry.add(stem, child);
-          yid++;
         }
 
       }
@@ -346,13 +345,16 @@ export default function Results(props) {
           ref = registry.get(stem);
           ref.count = registry.get(stem, 'stats');
           if (registry.get(stem, 'invocations') === 2) {
+            ref.original.visible = false;
             ref.color = registry.color;
             ref.position.y = registry.yid * (defaultStyles.leading * 1.15);
             registry.group.add(ref);
             registry.yid++;
           }
         } else {
-          registry.add(stem, group);
+          ref = new StatLine(group.keyword, count, registry.color);
+          ref.original = group;
+          registry.add(stem, ref);
         }
 
       }
@@ -410,10 +412,7 @@ export default function Results(props) {
         registry.group.position.x = 40;
         stage.add(registry.group);
       } else {
-        // TODO: Turn into animation loop
-        while (registry.group.children.length > 0) {
-          registry.group.children[registry.group.children.length - 1].remove();
-        }
+        registry.group.remove(registry.group.children);
       }
       registry.yid = 0;
       registry.needsUpdate = true;
@@ -493,6 +492,47 @@ export default function Results(props) {
           .start();
 
       }
+
+    }
+
+    addHighlightsToGraphLines(props.keyword);
+
+  }
+
+  function addHighlightsToGraphLines(keyword) {
+
+    var { objects } = refs.current;
+    var index = 0;
+
+    tick();
+
+    function tick() {
+
+      if (!objects[index]) {
+        return;
+      }
+
+      var object = objects[index];
+      var { group, grid } = object;
+
+      if (grid) {
+
+        grid.clearHighlights();
+
+        if (keyword) {
+          for (var i = 0; i < group.children.length; i++) {
+            var child = group.children[i];
+            var stem = child.className.replace(/(sl|highlight)/ig, '').trim();
+            if (stem === keyword) {
+              grid.addHighlight(child.position.clone());
+            }
+          }
+        }
+
+      }
+
+      index++;
+      requestAnimationFrame(tick);
 
     }
 
