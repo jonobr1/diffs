@@ -1,7 +1,7 @@
 import stem from 'wink-porter2-stemmer';
 import regex from './utils/regex.js';
 
-var registry = window.KeywordRegistry = {};
+var registry = {};
 
 export default class Keyword {
 
@@ -17,14 +17,16 @@ export default class Keyword {
 
   static dispose(keywords) {
     if (typeof keywords === 'undefined') {
-      registry = window.KeywordRegistry = {};
+      registry = {};
       return;
     }
-    keywords.forEach(function(keyword) {
-      if (keyword.stem in registry) {
-        registry[keyword.stem]--;
-      }
-    });
+    if (Array.isArray(keywords)) {
+      keywords.forEach(function(keyword) {
+        if (keyword.stem in registry) {
+          registry[keyword.stem]--;
+        }
+      });
+    }
   }
 
   //

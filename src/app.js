@@ -269,8 +269,8 @@ export default function App(props) {
       var word = text.slice(start, end);
 
       if (word) {
-        var keyword = new Keyword(word);
-        Keyword.dispose(keyword);
+        var keyword = new Keyword(0, word);
+        Keyword.dispose([keyword]);
         highlight(keyword);
       }
 
@@ -326,8 +326,8 @@ export default function App(props) {
 
       var elems = document.body.querySelectorAll('div.textarea');
       var index = 0;
-      var regex = new RegExp(`([^|\\W]?)(${word})([\\W|$]?)`, 'ig');
-      var response = `$1<span class="highlight">$2</span>$3`;
+      var regex = new RegExp(`(^|\\W|\>)?(${word})(\\W|$|\<)`, 'ig');
+      var replacement = `$1<span class="highlight">$2</span>$3`;
 
       tick();
 
@@ -337,7 +337,7 @@ export default function App(props) {
 
         if (elem) {
           index++;
-          elem.innerHTML = elem.innerText.replace(regex, response);
+          elem.innerHTML = elem.innerText.replace(regex, replacement);
           requestAnimationFrame(tick);
         }
 
