@@ -18,6 +18,7 @@ div#react button {
 }
 div#react button {
   padding: 0 4px;
+  text-transform: capitalize;
 }
 div#react button,
 div#react label,

@@ -6,6 +6,27 @@ import { random } from './utils/colors.js';
 
 import "./main.css";
 
+var modes = ['chronologic', 'frequency', 'alphabetic'];
+var sorting = [
+  function(a, b) {
+    return a.index - b.index;
+  },
+  function(a, b) {
+    return b.frequency - a.frequency;
+  },
+  function(a, b) {
+    var na = a.stem.toLowerCase();
+    var nb = b.stem.toLowerCase();
+    if (na < nb) {
+      return - 1;
+    }
+    if (na > nb) {
+      return 1;
+    }
+    return 0;
+  }
+];
+
 var emptyState = [
   {
     id: 0,
@@ -25,6 +46,7 @@ export default function App(props) {
   var [vizIsVisible, setVizIsVisible] = useState(true);
   var [highlightIsVisible, setHighlightIsVisible] = useState(false);
   var [keyword, setKeyword] = useState('');
+  var [mode, setMode] = useState(0);
   var [texts, setTexts] = useState(emptyState);
 
   useEffect(setup, []);
@@ -44,7 +66,8 @@ export default function App(props) {
         text.keywords = text.innerText.toLowerCase()
           .split(/\s+/i)
           .filter(isWord)
-          .map(createKeyword);
+          .map(createKeyword)
+          .sort(sorting[mode]);
         return text;
       });
       setTexts(state);
@@ -98,6 +121,20 @@ export default function App(props) {
     result.pop();
     setTexts(result);
     focus();
+  }
+
+  function cycle() {
+    var result = texts.slice(0);
+    setMode(function(mode) {
+      mode = (mode + 1) % modes.length;
+      for (var i = 0; i < result.length; i++) {
+        var object = result[i];
+        var iterator = sorting[mode];
+        object.keywords = object.keywords.sort(iterator);
+      }
+      setTexts(result);
+      return mode;
+    });
   }
 
   function toggleText() {
@@ -174,10 +211,14 @@ export default function App(props) {
         var obj = result[i];
         if (obj.innerText !== text) {
           obj.innerText = text;
+          if (obj.keywords) {
+            Keyword.dispose(obj.keywords);
+          }
           obj.keywords = text.toLowerCase()
             .split(/\s+/i)
             .filter(isWord)
-            .map(createKeyword);
+            .map(createKeyword)
+            .sort(sorting[mode]);
         }
         return result;
       });
@@ -229,6 +270,7 @@ export default function App(props) {
 
       if (word) {
         var keyword = new Keyword(word);
+        Keyword.dispose(keyword);
         highlight(keyword);
       }
 
@@ -323,6 +365,9 @@ export default function App(props) {
         <button onClick={ decrease }>
           Remove Text Field
         </button>
+        <button onClick={ cycle }>
+          Sort By: { modes[mode] }
+        </button>
         <span>
           <input id="text-visibility" type="checkbox" defaultChecked={ textIsVisible } onChange={ toggleText } />
           <label htmlFor="text-visibility">Text Visible</label>
@@ -353,5 +398,5 @@ function isWord(str) {
 }
 
 function createKeyword(word, i) {
-  return new Keyword(word);
+  return new Keyword(i, word);
 }
