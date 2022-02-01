@@ -5,9 +5,9 @@
   "main": "index.js",
   "scripts": {
     "less": "less-watch-compiler src src main.less --source-map",
-    "serve": "esbuild --bundle src/index.js --sourcemap --loader:.js=jsx --outfile=public/main.js --servedir=public --serve=8080",
+    "serve": "esbuild --bundle src/index.js --sourcemap --loader:.js=jsx --external:./images/* --outfile=public/main.js --servedir=public --serve=8080",
     "dev": "concurrently --kill-others \"npm run less\" \"npm run serve\"",
-    "build": "esbuild --bundle src/index.js --loader:.js=jsx --outfile=public/main.js --target=es6 --minify",
+    "build": "esbuild --bundle src/index.js --loader:.js=jsx --external:./images/* --outfile=public/main.js --target=es6 --minify",
     "deploy": "./deploy.sh"
   },
   "repository": {

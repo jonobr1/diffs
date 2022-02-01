@@ -47,6 +47,7 @@ export default function App(props) {
   var [highlightIsVisible, setHighlightIsVisible] = useState(false);
   var [keyword, setKeyword] = useState('');
   var [mode, setMode] = useState(0);
+  var [processing, setProcessing] = useState(false);
   var [texts, setTexts] = useState(emptyState);
 
   useEffect(setup, []);
@@ -348,10 +349,15 @@ export default function App(props) {
   }
 
   return (
-    <div ref={ domElement } className={ ['app', highlightIsVisible ? 'highlighting' : ''].join(' ') }>
+    <div ref={ domElement } className={ ['app', highlightIsVisible ? 'highlighting' : '', processing ? 'processing' : ''].join(' ') }>
 
       <div className={ ['view', 'visualization', vizIsVisible ? 'enabled' : ''].join(' ') }>
-        <Results objects={ texts } keyword={ highlightIsVisible && keyword } isHighlighted={ highlightIsVisible } onSelect={ (stem) => highlight({ word: stem, stem }) } />
+        <Results
+          objects={ texts }
+          keyword={ highlightIsVisible && keyword }
+          isHighlighted={ highlightIsVisible }
+          onProcessingChange={ (v) => setProcessing(!!v) }
+          onSelect={ (stem) => highlight({ word: stem, stem }) } />
       </div>
 
       <div className={ ['view', 'text', textIsVisible ? 'enabled' : '', highlightIsVisible ? 'highlighting' : ''].join(' ') }>
@@ -359,6 +365,7 @@ export default function App(props) {
       </div>
 
       <div className="menu">
+        <div id="signum" />
         <button onClick={ increase }>
           Add Text Field
         </button>

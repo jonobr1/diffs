@@ -8,6 +8,15 @@
 @font-stack: "Inter", Helvetica, Arial, sans-serif;
 @font-weight: 300;
 
+@keyframes spin {
+  0% {
+    transform: rotate(0);
+  }
+  100% {
+    transform: rotate(-360deg);
+  }
+}
+
 div#react {
 
   font-family: @font-stack;
@@ -54,6 +63,16 @@ div#react {
 
     }
 
+    div#signum {
+      display: inline-block;
+      vertical-align: middle;
+      width: @line-height;
+      height: @line-height;
+      background: url(./images/magnifier.png) center center no-repeat;
+      background-size: 75%;
+      content: "";
+    }
+
     &.highlighting {
 
       div.visualization {
@@ -70,6 +89,16 @@ div#react {
             border-radius: @font-size * 0.25;
           }
         }
+      }
+    }
+
+    &.processing {
+      div#signum {
+        background-image: url(./images/sync.svg);
+        animation-name: spin;
+        animation-duration: 0.5s;
+        animation-timing-function: ease-in-out;
+        animation-iteration-count: infinite;
       }
     }
 

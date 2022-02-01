@@ -324,6 +324,10 @@ export default function Results(props) {
 
       registry.needsUpdate = needsUpdate;
 
+      if (!registry.needsUpdate && props.onProcessingChange) {
+        props.onProcessingChange(false);
+      }
+
     }
 
     function merge(object) {
@@ -429,6 +433,10 @@ export default function Results(props) {
 
     refs.current.objects = props.objects;
     refs.current.needsUpdate = true;
+
+    if (props.onProcessingChange) {
+      props.onProcessingChange(true);
+    }
 
     if (refs.current.legend) {
       refs.current.legend.update();
