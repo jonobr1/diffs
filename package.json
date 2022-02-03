@@ -31,14 +31,14 @@
     "concurrently": "^6.4.0",
     "esbuild": "^0.14.3",
     "less": "^4.1.2",
-    "less-watch-compiler": "^1.16.3",
-    "wink-porter2-stemmer": "^2.0.1"
+    "less-watch-compiler": "^1.16.3"
   },
   "dependencies": {
     "@tweenjs/tween.js": "^18.6.4",
     "matter-js": "^0.18.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "two.js": "^0.8.3"
+    "two.js": "^0.8.3",
+    "wink-porter2-stemmer": "^2.0.1"
   }
 }
