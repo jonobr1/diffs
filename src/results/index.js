@@ -6,6 +6,7 @@ import Legend from '../legend.js';
 import GraphLine from './graph-line.js';
 import StatLine from './stat-line.js';
 import Registry from '../registry.js';
+import { Arc } from './arc.js';
 import { random } from '../utils/colors.js';
 import { styles as defaultStyles } from '../utils/styles.js';
 
@@ -29,7 +30,9 @@ export default function Results(props) {
     }).appendTo(domElement.current);
 
     var grid = new Two.Group();
-    var stage = two.makeGroup(grid);
+    var body = new Two.Group();
+    var arcs = new Two.Group();
+    var stage = two.makeGroup(arcs, grid, body);
     var legend = new Legend();
 
     two.add(legend.group);
@@ -50,6 +53,8 @@ export default function Results(props) {
     refs.current.legend = legend;
     refs.current.registry = registry;
     refs.current.stage = stage;
+    refs.current.body = body;
+    refs.current.arcs = arcs;
     refs.current.zui = zui;
     refs.current.click = function(e) {
       var elem = e.target;
@@ -397,7 +402,7 @@ export default function Results(props) {
           object.group = new Two.Group();
           object.group.position.y = 100;
           object.group.position.x = (i + 1) * 250;
-          stage.add(object.group);
+          body.add(object.group);
         }
 
         if (!object.grid) {
@@ -415,7 +420,7 @@ export default function Results(props) {
         registry.group = new Two.Group();
         registry.group.position.y = 100;
         registry.group.position.x = 40;
-        stage.add(registry.group);
+        body.add(registry.group);
       } else {
         registry.group.remove(registry.group.children);
       }
@@ -448,6 +453,7 @@ export default function Results(props) {
 
     var children, child, current;
     var { two, stage, zui } = refs.current;
+    var endpoints = [];
 
     refs.current.keyword = props.keyword;
 
@@ -467,8 +473,12 @@ export default function Results(props) {
         child = children[j];
 
         if (child.visible) {
+          // TODO: Arc starts here
           child.isHighlighted = true;
           current = child;
+        } else {
+          // End arc here
+          endpoints.push(child);
         }
 
       }
@@ -504,7 +514,57 @@ export default function Results(props) {
 
     }
 
+    addArcs(current, endpoints);
     addHighlightsToGraphLines(props.keyword);
+
+  }
+
+  function addArcs(current, endpoints) {
+
+    var matrix, wp, cp;
+    var { arcs } = refs.current;
+
+    if (arcs.children.length > 0) {
+      arcs.remove(arcs.children);
+    }
+
+    if (current && endpoints.length > 0) {
+
+      matrix = current.parent.matrix;
+      wp = matrix.multiply(current.position.x, current.position.y, 1);
+
+      for (var i = 0; i < endpoints.length; i++) {
+
+        var child = endpoints[i];
+
+        matrix = child.parent.matrix;
+        cp = matrix.multiply(child.position.x, child.position.y, 1);
+
+        var mx = (cp.x + wp.x) / 2;
+        var my = (cp.y + wp.y) / 2;
+
+        var dx = cp.x - wp.x;
+        var dy = cp.y - wp.y;
+
+        var r = Math.sqrt(dx * dx + dy * dy) / 2;
+        var arc = new Arc(mx, my, r, 0, - Math.PI);
+
+        arc.rotation = Math.atan2(dy, dx);
+        arc.fill = 'none';
+        arc.stroke = '#333';
+        arcs.add(arc);
+
+        arc.beginning = 1;
+
+        var tween = new TWEEN.Tween(arc)
+          .to({ beginning: 0 }, 350)
+          .delay(i * 250)
+          .easing(TWEEN.Easing.Sinusoidal.Out)
+          .start();
+
+      }
+
+    }
 
   }
 
