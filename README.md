@@ -13,4 +13,4 @@ A collection of components to visually compare texts
 - [x] Save state of application to localStorage
 - [x] Sort by frequency, alphabetic, etc.
 - [x] Add a loading gif to the visualization when processing
-- [ ] Arcs and highlights don't work on sorted lists
+- [x] Arcs and highlights don't work on sorted lists
