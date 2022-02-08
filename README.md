@@ -14,3 +14,4 @@ A collection of components to visually compare texts
 - [x] Sort by frequency, alphabetic, etc.
 - [x] Add a loading gif to the visualization when processing
 - [x] Arcs and highlights don't work on sorted lists
+- [ ] Set `MAX_ITERATIONS` based on the length of texts
