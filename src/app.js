@@ -134,6 +134,8 @@ export default function App(props) {
         object.keywords = object.keywords.sort(iterator);
       }
       setTexts(result);
+      setHighlightIsVisible(false);
+      document.querySelector('#highlight-visibility').checked = false;
       return mode;
     });
   }
