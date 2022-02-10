@@ -381,6 +381,7 @@ export default function Results(props) {
 
     function reset() {
 
+      var length = 0;
       var { objects } = refs.current;
 
       for (var i = 0; i < objects.length; i++) {
@@ -391,6 +392,8 @@ export default function Results(props) {
         object.index = 0;
         object.mergeId = 0;
         object.processing = true;
+
+        length += object.innerText.length;
 
         if (object.registry) {
           object.registry.clear();
@@ -416,6 +419,8 @@ export default function Results(props) {
 
       }
 
+      MAX_ITERATIONS = Math.min(Math.floor(length / 100), 250);
+
       if (!registry.group) {
         registry.group = new Two.Group();
         registry.group.position.y = 100;
@@ -424,6 +429,7 @@ export default function Results(props) {
       } else {
         registry.group.remove(registry.group.children);
       }
+
       registry.yid = 0;
       registry.needsUpdate = true;
       registry.clear();
