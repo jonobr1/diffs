@@ -1,5 +1,9 @@
+import { all } from './string.js';
+
 var regex = {
-  noWords: /[^\w\-\_]+/ig
+  contractions: /[\'\’].*$/i,
+  noWords: /[^\w\-\_]+/ig,
+  restricted: new RegExp(`^(${all.join('|')})$`, 'i')
 };
 
 export default regex;

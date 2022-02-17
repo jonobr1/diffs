@@ -42,7 +42,9 @@ export default class Keyword {
     if (this.stem in registry) {
       registry[this.stem]--;
     }
-    this._word = v.replace(regex.noWords, '').trim();
+    this._word = v.replace(regex.contractions, '')
+      .replace(regex.noWords, '')
+      .trim();
     this.stem = stem(this._word);
     if (!(this.stem in registry)) {
       registry[this.stem] = 0;

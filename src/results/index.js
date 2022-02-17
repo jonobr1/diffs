@@ -9,6 +9,7 @@ import Registry from '../registry.js';
 import { Arc } from './arc.js';
 import { random } from '../utils/colors.js';
 import { styles as defaultStyles } from '../utils/styles.js';
+import regex from '../utils/regex.js';
 
 var MAX_ITERATIONS = 1;
 
@@ -283,7 +284,7 @@ export default function Results(props) {
         child.position.y = yid++ * (defaultStyles.leading * 1.15);
         child.keyword = keyword;
         child.count = 1;
-        child.visible = true;
+        child.visible = !regex.restricted.test(word.replace(/[\'\’].*/i, ''));
 
         grid.addPoint(child.position.clone());
 
