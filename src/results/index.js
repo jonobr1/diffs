@@ -302,7 +302,9 @@ export default function Results(props) {
       object.index = i;
       object.yid = yid;
 
-      grid.bottom = child.position.y;
+      if (child) {
+        grid.bottom = child.position.y;
+      }
 
     }
 
@@ -357,10 +359,13 @@ export default function Results(props) {
           ref.count = registry.get(stem, 'stats');
           if (registry.get(stem, 'invocations') === 2) {
             ref.original.visible = false;
-            ref.color = registry.color;
-            ref.position.y = registry.yid * (defaultStyles.leading * 1.15);
-            registry.group.add(ref);
-            registry.yid++;
+            ref.visible = !regex.restricted.test(word.replace(/[\'\’].*/i, ''));
+            if (ref.visible) {
+              ref.color = registry.color;
+              ref.position.y = registry.yid * (defaultStyles.leading * 1.15);
+              registry.group.add(ref);
+              registry.yid++;
+            }
           }
         } else {
           ref = new StatLine(group.keyword, count, registry.color);
@@ -420,7 +425,7 @@ export default function Results(props) {
 
       }
 
-      MAX_ITERATIONS = Math.min(Math.floor(length / 100), 250);
+      MAX_ITERATIONS = Math.min(Math.max(Math.floor(length / 100), 1), 250);
 
       if (!registry.group) {
         registry.group = new Two.Group();
