@@ -4,6 +4,7 @@ A collection of components to visually compare texts
 ## Roadmap
 
 - [ ] Turn global actions / navigation up top to a Figma style layers
+- [ ] On paste don't strip carriage returns
 - [x] Recalculate all counts (and visualization) when any text changes
 - [x] Turn highlighted word / words into a canonical term (stem via Porter2)
 - [x] Highlights should happen in visualization too
